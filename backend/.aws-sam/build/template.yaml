@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'digishelf-app
+
+  Sample SAM Template for digishelf-app
+
+  '
+Globals:
+  Function:
+    Timeout: 3
+Resources:
+  HomeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: HomeFunction
+      Handler: index.index
+      Runtime: nodejs12.x
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
+  AddShelveFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: AddShelveFunction
+      Handler: shelves/addShelve.addShelve
+      Runtime: nodejs12.x
+      Policies:
+      - AmazonDynamoDBFullAccess
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /shelves
+            Method: post
+  ShelvesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: name
+        AttributeType: S
+      KeySchema:
+      - AttributeName: name
+        KeyType: HASH
+      TableName: DigishelfShelves
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+Outputs:
+  HelloWorldApi:
+    Description: API Gateway endpoint URL for Prod stage for Hello World function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
