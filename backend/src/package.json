@@ -8,6 +8,8 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^0.21.1",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.6.5",
     "slugify": "^1.5.3"
   },
   "scripts": {
