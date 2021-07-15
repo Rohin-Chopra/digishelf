@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     description: DataTypes.STRING(200),
     type: DataTypes.STRING(50),
-    coverImg: DataTypes.String(400)
+    coverImg: DataTypes.STRING(400)
   })
 
   return Media
