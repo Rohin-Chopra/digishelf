@@ -1,6 +1,7 @@
 const db = require('./../config/db')
 const Shelf = require('./../models/shelf')(db.sequelize, db.Sequelize)
 
+// TODO :  add s3 image upload functionality
 exports.addShelve = async (event, context) => {
   let responseBody
   let statusCode
@@ -28,6 +29,12 @@ exports.addShelve = async (event, context) => {
     responseBody = {
       status: 'error',
       message: error.message
+    }
+
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      statusCode = 400
+      responseBody.message =
+        'A shelf with this name exists already, try another name!'
     }
   }
 
