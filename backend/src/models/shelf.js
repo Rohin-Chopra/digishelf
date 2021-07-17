@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
     },
-    publicity: {
+    visibility: {
       type: DataTypes.STRING(200),
       defaultValue: 'public'
     },
