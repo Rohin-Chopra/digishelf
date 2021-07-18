@@ -102,7 +102,37 @@ Resources:
           Properties:
             Path: /shelf/:slug/media
             Method: post
+  DeleteMediaFromShelfFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Timeout: 900
+      CodeUri: src/
+      Handler: shelves/deleteMediaFromShelf.deleteMediaFromShelf
+      Runtime: nodejs12.x
+      Policies:
+        - AmazonDynamoDBFullAccess
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /shelf/:slug/media/:id
+            Method: delete
 
+  GetMediaFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Timeout: 900
+      CodeUri: src/
+      Handler: media/getMedia.handler
+      Runtime: nodejs12.x
+      Policies:
+        - AmazonDynamoDBFullAccess
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /media/:mediaId
+            Method: get
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
