@@ -20,9 +20,10 @@ exports.addMediaToShelf = async (event) => {
 
     // create or get the media
     await Media.findOrCreate({
-      where: { id: data.mediaId },
+      where: { id: data.mediaId, type: data.mediaType },
       defaults: {
-        id: data.mediaId
+        id: data.mediaId,
+        type: data.mediaType
       }
     })
 
