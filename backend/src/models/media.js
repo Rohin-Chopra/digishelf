@@ -3,6 +3,10 @@ module.exports = (sequelize, DataTypes) => {
     id: {
       type: DataTypes.STRING(100),
       primaryKey: true
+    },
+    type: {
+      type: DataTypes.STRING(50),
+      allowNull: false
     }
   })
   return Media
