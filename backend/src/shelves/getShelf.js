@@ -1,44 +1,32 @@
 const db = require('../config/db')
+const AppError = require('../utils/AppError')
+const errorHandler = require('../utils/errorHandler')
 const Shelf = require('../models/shelf')(db.sequelize, db.Sequelize)
 
-exports.getShelf = async (event) => {
-  let responseBody, statusCode
+exports.getShelf = errorHandler(async (event) => {
+  await db.sequelize.sync()
 
-  try {
-    await db.sequelize.sync()
-
-    const shelf = await Shelf.findOne({
-      where: {
-        ...event.body,
-        slug: event.pathParameters.slug
-      }
-    })
-
-    // check if the found shelf is private and the user is authorized to see it
-    if (
-      shelf === null ||
-      (shelf.publicity === 'private' &&
-        shelf.createdBy !== event.requestContext.authorizer.claims.username)
-    ) {
-      statusCode = 404
-      responseBody = {
-        status: 'error',
-        message: 'Could not find a shelf with this slug'
-      }
-    } else {
-      statusCode = 200
-      responseBody = { status: 'success', shelf }
+  const shelf = await Shelf.findOne({
+    where: {
+      ...event.body,
+      slug: event.pathParameters.slug
     }
-  } catch (error) {
-    statusCode = 500
-    responseBody = { error: error.message }
+  })
+
+  // check if the found shelf is private and the user is authorized to see it
+  if (
+    shelf === null ||
+    (shelf.publicity === 'private' &&
+      shelf.createdBy !== event.requestContext.authorizer.claims.username)
+  ) {
+    throw new AppError('Could not find a shelf with this slug', 404)
   }
 
   return {
     headers: {
       'Content-Type': 'application/json'
     },
-    statusCode,
-    body: responseBody
+    statusCode: 200,
+    body: { status: 'success', shelf }
   }
-}
+})

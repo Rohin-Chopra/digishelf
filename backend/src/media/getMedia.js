@@ -7,7 +7,7 @@ const Media = require('../models/media')(sequelize, Sequelize)
 exports.handler = errorHandler(async (event) => {
   const data = JSON.parse(event.body)
   await sequelize.sync()
-  
+
   // check if the shelf has that media, if not throw 404 otherwise just return the media
   const media = await Media.findOne({
     where: {
