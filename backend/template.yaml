@@ -53,7 +53,22 @@ Resources:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /shelve/:slug
-            Method: post
+            Method: get
+  DeleteShelfFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Timeout: 900
+      CodeUri: src/
+      Handler: shelves/deleteShelf.deleteShelf
+      Runtime: nodejs12.x
+      Policies:
+        - AmazonDynamoDBFullAccess
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /shelf/:slug
+            Method: delete
 
   GetAllShelvesFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
