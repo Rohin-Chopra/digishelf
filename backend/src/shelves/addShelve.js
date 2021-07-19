@@ -13,7 +13,7 @@ exports.addShelve = errorHandler(async (event, context) => {
     shelf = await Shelf.create({
       name: data.name,
       description: data.description,
-      createdBy: data.createdBy,
+      createdBy: event.requestContext.authorizer.claims.username,
       publicity: data.publicity,
       coverImg: data.coverImg
     })
