@@ -1,10 +1,10 @@
 const axios = require('axios')
 const { sequelize, Sequelize } = require('../config/db')
 const AppError = require('../utils/AppError')
-const errorHandler = require('../utils/errorHandler')
+const asyncHandler = require('express-async-handler')
 const Media = require('../models/media')(sequelize, Sequelize)
 
-exports.handler = errorHandler(async (event) => {
+exports.getMedia = asyncHandler(async (event) => {
   const data = JSON.parse(event.body)
   await sequelize.sync()
 

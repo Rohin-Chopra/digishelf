@@ -5,16 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "sam local start-api",
+    "start:local": "nodemon src/local.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "sam build",
-    "home": "sam local invoke HomeFunction",
-    "addShelf": "sam local invoke --event events/addShelve.json AddShelfFunction",
-    "editShelf": "sam local invoke --event events/editShelf.json EditShelfFunction",
-    "deleteShelf": "sam local invoke --event events/deleteShelf.json DeleteShelfFunction",
-    "addMediaToShelf": "sam local invoke --event events/addMediaToShelf.json AddMediaToShelfFunction",
-    "getMedia": "sam local invoke --event events/getMedia.json GetMediaFunction"
+    "deploy": "sam deploy"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {}
 }
