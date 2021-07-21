@@ -1,6 +1,5 @@
 const AWS = require('aws-sdk')
 const asyncHandler = require('express-async-handler')
-const { getCurrentInvoke } = require('@vendia/serverless-express')
 const db = require('./../config/db')
 const Shelf = require('./../models/shelf')(db.sequelize, db.Sequelize)
 const ShelfMedia = require('./../models/shelfMedia')(db.sequelize, db.Sequelize)
@@ -8,8 +7,6 @@ const Media = require('./../models/media')(db.sequelize, db.Sequelize)
 const AppError = require('./../utils/AppError')
 
 exports.getShelf = asyncHandler(async (req, res, next) => {
-  const { event } = getCurrentInvoke()
-
   await db.sequelize.sync()
 
   const shelf = await Shelf.findOne({
@@ -36,8 +33,6 @@ exports.getShelf = asyncHandler(async (req, res, next) => {
 exports.getAllShelves = asyncHandler(async (req, res, next) => {
   const { Op } = require('sequelize')
 
-  const { event } = getCurrentInvoke()
-
   await db.sequelize.sync()
 
   // Gets all public shelves and private shelf of the authed user
@@ -57,7 +52,6 @@ exports.getAllShelves = asyncHandler(async (req, res, next) => {
 exports.addShelf = asyncHandler(async (req, res, next) => {
   const { nanoid } = require('nanoid')
 
-  const { event } = getCurrentInvoke()
   await db.sequelize.sync()
   let shelf
 
@@ -162,7 +156,6 @@ exports.deleteShelf = asyncHandler(async (req, res, next) => {
 })
 
 exports.addMediaToShelf = asyncHandler(async (req, res, next) => {
-
   await db.sequelize.sync({ force: false })
 
   // find the shelf and if it does not exist, throw an error
@@ -197,9 +190,8 @@ exports.addMediaToShelf = asyncHandler(async (req, res, next) => {
 })
 
 exports.deleteMediaFromShelf = asyncHandler(async (req, res, next) => {
-
   await db.sequelize.sync({ force: false })
-
+  console.log(req.params)
   // find the shelf and if it does not exist, throw an error
   const shelf = await Shelf.findOne({
     where: { slug: req.params.slug, createdBy: req.username }
@@ -210,14 +202,14 @@ exports.deleteMediaFromShelf = asyncHandler(async (req, res, next) => {
 
   // if the media has not been already added to shelf, throw an error
   const mediaShelf = await ShelfMedia.findOne({
-    where: { MediaId: req.body.mediaId, ShelfId: req.body.id }
+    where: { MediaId: req.params.mediaId, ShelfId: shelf.id }
   })
   if (mediaShelf === null) {
     throw new AppError('This item does not exist in this shelf')
   }
 
   await ShelfMedia.destroy({
-    where: { MediaId: req.body.mediaId, ShelfId: shelf.id }
+    where: { MediaId: req.params.mediaId, ShelfId: shelf.id }
   })
   res.status(204).json({
     status: 'success',
