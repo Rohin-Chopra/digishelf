@@ -10,11 +10,12 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     name: {
-      type: DataTypes.STRING(50)
+      type: DataTypes.STRING(50),
+      allowNull: false
     },
     description: {
       type: DataTypes.STRING(200),
-      allowNull: true
+      allowNull: false
     },
     createdBy: {
       type: DataTypes.STRING,
@@ -29,7 +30,8 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'public'
     },
     coverImg: {
-      type: DataTypes.STRING(200)
+      type: DataTypes.STRING(200),
+      allowNull: false
     },
     slug: {
       type: DataTypes.STRING(200),
