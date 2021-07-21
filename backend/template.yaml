@@ -8,150 +8,36 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 900
+  Api:
+    BinaryMediaTypes: ['*~1*']
 
 Resources:
-  HomeFunction:
+  AllEventsFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: src/
-      Handler: index.index
+      Handler: lambda.handler
       Runtime: nodejs12.x
+      Policies:
+        - S3FullAccessPolicy:
+            BucketName: digishelf-bucket
       Events:
-        HelloWorld:
+        DigiShelfAPIRoot:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /
-            Method: get
-  AddShelfFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      Timeout: 900
-      CodeUri: src/
-      Handler: shelves/addShelve.addShelve
-      Runtime: nodejs12.x
-      Policies:
-        - AmazonDynamoDBFullAccess
-      Events:
-        HelloWorld:
+            Method: ANY
+        DigiShelfAPI:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /shelves
-            Method: post
+            Path: /{proxy+}
+            Method: ANY
 
-  GetShelfFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      Timeout: 900
-      CodeUri: src/
-      Handler: shelves/getShelf.getShelf
-      Runtime: nodejs12.x
-      Policies:
-        - AmazonDynamoDBFullAccess
-      Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /shelve/:slug
-            Method: get
-  DeleteShelfFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      Timeout: 900
-      CodeUri: src/
-      Handler: shelves/deleteShelf.deleteShelf
-      Runtime: nodejs12.x
-      Policies:
-        - AmazonDynamoDBFullAccess
-      Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /shelf/:slug
-            Method: delete
-
-  GetAllShelvesFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      Timeout: 900
-      CodeUri: src/
-      Handler: shelves/getAllShelves.getAllShelves
-      Runtime: nodejs12.x
-      Policies:
-        - AmazonDynamoDBFullAccess
-      Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /shelves
-            Method: get
-
-  GetMyShelvesFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      Timeout: 900
-      CodeUri: src/
-      Handler: shelves/getMyShelves.getMyShelves
-      Runtime: nodejs12.x
-      Policies:
-        - AmazonDynamoDBFullAccess
-      Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /my-shelves
-            Method: post
-
-  AddMediaToShelfFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      Timeout: 900
-      CodeUri: src/
-      Handler: shelves/addMediaToShelf.addMediaToShelf
-      Runtime: nodejs12.x
-      Policies:
-        - AmazonDynamoDBFullAccess
-      Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /shelf/:slug/media
-            Method: post
-  DeleteMediaFromShelfFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      Timeout: 900
-      CodeUri: src/
-      Handler: shelves/deleteMediaFromShelf.deleteMediaFromShelf
-      Runtime: nodejs12.x
-      Policies:
-        - AmazonDynamoDBFullAccess
-      Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /shelf/:slug/media/:id
-            Method: delete
-
-  GetMediaFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      Timeout: 900
-      CodeUri: src/
-      Handler: media/getMedia.handler
-      Runtime: nodejs12.x
-      Policies:
-        - AmazonDynamoDBFullAccess
-      Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /media/:mediaId
-            Method: get
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
+  DigiShelfAPI:
     Description: 'API Gateway endpoint URL for Prod stage for Hello World function'
     Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/'
