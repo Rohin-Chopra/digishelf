@@ -198,8 +198,6 @@ exports.addMediaToShelf = asyncHandler(async (req, res, next) => {
 })
 
 exports.deleteMediaFromShelf = asyncHandler(async (req, res, next) => {
-  await db.sequelize.sync({ force: false })
-  console.log(req.params)
   // find the shelf and if it does not exist, throw an error
   const shelf = await Shelf.findOne({
     where: { slug: req.params.slug, createdBy: req.username }
