@@ -21,7 +21,7 @@ exports.getShelf = asyncHandler(async (req, res, next) => {
     shelf === null ||
     (shelf.publicity === 'private' && shelf.createdBy !== req.username)
   ) {
-    throw new AppError('Could not find a shelf with this slug', 404)
+    return next(new AppError('Could not find a shelf with this slug', 404))
   }
 
   res.status(200).json({
@@ -96,9 +96,8 @@ exports.editShelf = asyncHandler(async (req, res, next) => {
     where: { slug: req.params.slug, createdBy: req.username }
   })
   if (shelf === null) {
-    throw new AppError(
-      'Unable to edit, shelf with the given id was not found',
-      404
+    return next(
+      new AppError('Unable to edit, shelf with the given id was not found', 404)
     )
   }
 
@@ -130,9 +129,11 @@ exports.deleteShelf = asyncHandler(async (req, res, next) => {
     where: { slug: req.params.slug, createdBy: req.username }
   })
   if (shelf === null) {
-    throw new AppError(
-      'Unable to delete, shelf with the given id was not found',
-      400
+    return next(
+      new AppError(
+        'Unable to delete, shelf with the given id was not found',
+        400
+      )
     )
   }
 
@@ -163,7 +164,7 @@ exports.addMediaToShelf = asyncHandler(async (req, res, next) => {
     where: { slug: req.params.slug, createdBy: req.username }
   })
   if (shelf === null) {
-    throw new AppError('The shelf with this slug does not exist', 404)
+    next(new AppError('The shelf with this slug does not exist', 404))
   }
 
   // create or get the media
@@ -181,7 +182,9 @@ exports.addMediaToShelf = asyncHandler(async (req, res, next) => {
     defaults: { MediaId: req.body.mediaId, ShelfId: shelf.id }
   })
   if (!mediaShelfCreated) {
-    throw new AppError('This item has already been added to this shelf', 400)
+    return next(
+      new AppError('This item has already been added to this shelf', 400)
+    )
   }
   res.status(200).json({
     status: 'success',
@@ -197,7 +200,7 @@ exports.deleteMediaFromShelf = asyncHandler(async (req, res, next) => {
     where: { slug: req.params.slug, createdBy: req.username }
   })
   if (shelf === null) {
-    throw new AppError('The shelf with this slug does not exist', 404)
+    return next(new AppError('The shelf with this slug does not exist', 404))
   }
 
   // if the media has not been already added to shelf, throw an error
@@ -205,7 +208,7 @@ exports.deleteMediaFromShelf = asyncHandler(async (req, res, next) => {
     where: { MediaId: req.params.mediaId, ShelfId: shelf.id }
   })
   if (mediaShelf === null) {
-    throw new AppError('This item does not exist in this shelf', 404)
+    return next(new AppError('This item does not exist in this shelf', 404))
   }
 
   await ShelfMedia.destroy({
