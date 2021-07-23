@@ -1,11 +1,11 @@
 {
-  "name": "backend",
+  "name": "digishelf-backend",
   "version": "1.0.0",
   "description": "This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.",
   "main": "index.js",
   "scripts": {
     "start": "sam local start-api",
-    "start:local": "nodemon src/local.js",
+    "start:local": "set NODE_ENV=dev && nodemon src/local.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "sam build",
     "deploy": "sam deploy"
