@@ -1,8 +1,6 @@
-const { UUIDV4 } = require('sequelize')
+const { UUIDV4, DataTypes } = require('sequelize')
 
-module.exports = (sequelize, DataTypes) => {
-  const Media = require('./../models/media')(sequelize, DataTypes)
-  const Shelf = require('./../models/shelf')(sequelize, DataTypes)
+module.exports = (sequelize) => {
   const ShelfMedia = sequelize.define('ShelfMedia', {
     id: {
       type: DataTypes.UUID,
@@ -12,7 +10,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   })
 
-  Media.belongsToMany(Shelf, { through: ShelfMedia, foreignKey: 'MediaId' })
-  Shelf.belongsToMany(Media, { through: ShelfMedia, foreignKey: 'ShelfId' })
   return ShelfMedia
 }

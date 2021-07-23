@@ -2,6 +2,11 @@ const express = require('express')
 const fileUpload = require('express-fileupload')
 const { getCurrentInvoke } = require('@vendia/serverless-express')
 
+const sequelize = require('./config/db')
+;(async () => {
+  await sequelize.sync()
+})()
+
 const app = express()
 app.use(express.json())
 
@@ -14,12 +19,16 @@ app.use(fileUpload())
 app.use((req, res, next) => {
   const { event } = getCurrentInvoke()
 
-  if (
-    event.requestContext.authorizer &&
-    event.requestContext.authorizer.claims &&
-    event.requestContext.authorizer.claims.username
-  ) {
-    req.username = event.requestContext.authorizer.claims.username
+  if (process.env.NODE_ENV === 'production') {
+    if (
+      event.requestContext.authorizer &&
+      event.requestContext.authorizer.claims &&
+      event.requestContext.authorizer.claims.username
+    ) {
+      req.username = event.requestContext.authorizer.claims.username
+    }
+  } else {
+    req.username = 'test'
   }
   next()
 })
