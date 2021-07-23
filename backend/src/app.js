@@ -6,6 +6,7 @@ const app = express()
 app.use(express.json())
 
 const shelfRouter = require('./routes/shelfRouter')
+const mediaRouter = require('./routes/mediaRouter')
 const errorHandler = require('./utils/errorHandler')
 
 app.use(fileUpload())
@@ -13,7 +14,13 @@ app.use(fileUpload())
 app.use((req, res, next) => {
   const { event } = getCurrentInvoke()
 
-  req.username = 'rohin1212' || event.requestContext.authorizer.claims.username
+  if (
+    event.requestContext.authorizer &&
+    event.requestContext.authorizer.claims &&
+    event.requestContext.authorizer.claims.username
+  ) {
+    req.username = event.requestContext.authorizer.claims.username
+  }
   next()
 })
 
