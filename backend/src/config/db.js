@@ -1,6 +1,4 @@
 const Sequelize = require('sequelize')
-const dbMode = process.env.NODE_ENV || 'development'
-const env = require('./env.json')[dbMode]
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
