@@ -136,3 +136,6 @@ samconfig.toml
 src/config/env.json
 
 events/
+
+#ignore .env files
+.env
