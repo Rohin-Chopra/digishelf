@@ -31,6 +31,7 @@ app.get('/', (req, res, next) => {
 })
 
 app.use('/shelves', shelfRouter)
+app.use('/media', mediaRouter)
 
 app.use(errorHandler)
 

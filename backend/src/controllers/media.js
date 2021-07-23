@@ -4,36 +4,32 @@ const AppError = require('../utils/AppError')
 const asyncHandler = require('express-async-handler')
 const Media = require('../models/media')(sequelize, Sequelize)
 
-exports.getMedia = asyncHandler(async (event) => {
-  const data = JSON.parse(event.body)
+exports.getMedia = asyncHandler(async (req, res, next) => {
   await sequelize.sync()
 
   // check if the shelf has that media, if not throw 404 otherwise just return the media
   const media = await Media.findOne({
     where: {
-      id: event.pathParameters.mediaId,
-      type: data.type
+      id: req.params.id,
+      type: req.query.type
     }
   })
 
   if (media === null) {
-    throw new AppError('Media not found', 404)
+    return next(new AppError('Media not found', 404))
   }
 
-  const res = await axios.get(
-    `https://api.themoviedb.org/3/${data.type}/${event.pathParameters.mediaId}`,
+  const result = await axios.get(
+    `https://api.themoviedb.org/3/${req.query.type}/${req.params.id}`,
     {
       params: {
-        api_key: '4e02f274e1c605a2e0b08bac93f177e4'
+        api_key: process.env.MOVIEDB_API_KEY
       }
     }
   )
 
-  return {
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    statusCode: 200,
-    responseBody: { status: 'success', data: res.data }
-  }
+  res.status(200).json({
+    status: 'success',
+    data: result.data
+  })
 })
