@@ -1,11 +1,11 @@
 const axios = require('axios')
-const { sequelize, Sequelize } = require('../config/db')
+const { models } = require('../config/db')
+const { Media } = models
 const AppError = require('../utils/AppError')
 const asyncHandler = require('express-async-handler')
-const Media = require('../models/media')(sequelize, Sequelize)
 
 exports.getMedia = asyncHandler(async (req, res, next) => {
-  await sequelize.sync()
+  await models.Media.sync()
 
   // check if the shelf has that media, if not throw 404 otherwise just return the media
   const media = await Media.findOne({
