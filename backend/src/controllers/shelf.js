@@ -59,7 +59,6 @@ exports.getAllShelves = asyncHandler(async (req, res, next) => {
   })
 })
 
-// TODO :  add s3 image upload functionality
 exports.addShelf = asyncHandler(async (req, res, next) => {
   const { nanoid } = require('nanoid')
 
@@ -80,7 +79,7 @@ exports.addShelf = asyncHandler(async (req, res, next) => {
   const s3 = new AWS.S3()
   const fileContent = Buffer.from(req.files.coverImg.data, 'binary')
   const params = {
-    Bucket: 'rohin-testing-bucket',
+    Bucket: process.env.BUCKET_NAME,
     Key: `images/${nanoid()}-${req.files.coverImg.name}`,
     Body: fileContent
   }
@@ -89,7 +88,7 @@ exports.addShelf = asyncHandler(async (req, res, next) => {
   shelf = await Shelf.create({
     name: req.body.name,
     description: req.body.description,
-    createdBy: 'rohin1212' || req.username,
+    createdBy: req.username,
     publicity: req.body.publicity,
     coverImg: data.Key
   })
