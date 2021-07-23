@@ -16,6 +16,9 @@ Resources:
   AllEventsFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
+      Environment:
+        Variables:
+          NODE_ENV: dev
       CodeUri: src/
       Handler: lambda.handler
       Runtime: nodejs12.x
@@ -39,5 +42,5 @@ Outputs:
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   DigiShelfAPI:
-    Description: 'API Gateway endpoint URL for Prod stage for Hello World function'
+    Description: 'API Gateway endpoint URL for Prod stage for DigiShelf function'
     Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
