@@ -1,21 +1,25 @@
 const AWS = require('aws-sdk')
 const asyncHandler = require('express-async-handler')
-const db = require('./../config/db')
-const Shelf = require('./../models/shelf')(db.sequelize, db.Sequelize)
-const ShelfMedia = require('./../models/shelfMedia')(db.sequelize, db.Sequelize)
-const Media = require('./../models/media')(db.sequelize, db.Sequelize)
+const { models } = require('./../config/db')
+const { Shelf, ShelfMedia, Media } = models
 const AppError = require('./../utils/AppError')
 
 exports.getShelf = asyncHandler(async (req, res, next) => {
-  await db.sequelize.sync()
-
   const shelf = await Shelf.findOne({
     where: {
       ...req.body,
       slug: req.params.slug
-    }
+    },
+    include: [
+      {
+        model: Media,
+        attributes: ['id', 'type'],
+        through: {
+          attributes: []
+        }
+      }
+    ]
   })
-
   // check if the found shelf is private and the user is authorized to see it
   if (
     shelf === null ||
@@ -33,13 +37,20 @@ exports.getShelf = asyncHandler(async (req, res, next) => {
 exports.getAllShelves = asyncHandler(async (req, res, next) => {
   const { Op } = require('sequelize')
 
-  await db.sequelize.sync()
-
   // Gets all public shelves and private shelf of the authed user
   const shelves = await Shelf.findAll({
     where: {
       [Op.or]: [{ visibility: 'public' }, { createdBy: req.username }]
-    }
+    },
+    include: [
+      {
+        model: Media,
+        attributes: ['id', 'type'],
+        through: {
+          attributes: []
+        }
+      }
+    ]
   })
   res.status(200).json({
     status: 'success',
@@ -52,7 +63,6 @@ exports.getAllShelves = asyncHandler(async (req, res, next) => {
 exports.addShelf = asyncHandler(async (req, res, next) => {
   const { nanoid } = require('nanoid')
 
-  await db.sequelize.sync()
   let shelf
 
   shelf = await Shelf.findOne({
@@ -91,7 +101,6 @@ exports.addShelf = asyncHandler(async (req, res, next) => {
 })
 
 exports.editShelf = asyncHandler(async (req, res, next) => {
-  await db.sequelize.sync()
   const shelf = await Shelf.findOne({
     where: { slug: req.params.slug, createdBy: req.username }
   })
@@ -121,8 +130,6 @@ exports.editShelf = asyncHandler(async (req, res, next) => {
 })
 
 exports.deleteShelf = asyncHandler(async (req, res, next) => {
-  await db.sequelize.sync()
-
   // check if the shelf exists, and if not throw an error
 
   const shelf = await Shelf.findOne({
@@ -157,8 +164,6 @@ exports.deleteShelf = asyncHandler(async (req, res, next) => {
 })
 
 exports.addMediaToShelf = asyncHandler(async (req, res, next) => {
-  await db.sequelize.sync({ force: false })
-
   // find the shelf and if it does not exist, throw an error
   const shelf = await Shelf.findOne({
     where: { slug: req.params.slug, createdBy: req.username }
