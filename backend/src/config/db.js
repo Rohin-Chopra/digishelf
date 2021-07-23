@@ -1,4 +1,9 @@
 const Sequelize = require('sequelize')
+const createAssociations = require('./createAssociations')
+
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -13,14 +18,16 @@ const sequelize = new Sequelize(
     pool: {
       maxConnections: 5,
       maxIdleTime: 30
-    },
-    dialectOptions: {
-      ssl: 'Amazon RDS'
     }
+    // dialectOptions: {
+    //   ssl: 'Amazon RDS'
+    // }
   }
 )
+require('./../models/media')(sequelize)
+require('./../models/shelf')(sequelize)
+require('./../models/shelfMedia')(sequelize)
 
-module.exports = {
-  Sequelize,
-  sequelize
-}
+createAssociations(sequelize)
+
+module.exports = sequelize

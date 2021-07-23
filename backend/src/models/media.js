@@ -1,5 +1,7 @@
-module.exports = (sequelize, DataTypes) => {
-  const Media = sequelize.define('Media', {
+const { DataTypes } = require('sequelize')
+
+module.exports = (sequelize) => {
+  sequelize.define('Media', {
     id: {
       type: DataTypes.STRING(100),
       primaryKey: true
@@ -9,5 +11,4 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }
   })
-  return Media
 }

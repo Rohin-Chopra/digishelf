@@ -1,7 +1,7 @@
-const { UUIDV4 } = require('sequelize')
+const { UUIDV4, DataTypes } = require('sequelize')
 const slugify = require('slugify')
 
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize) => {
   const Shelf = sequelize.define('Shelf', {
     id: {
       type: DataTypes.UUID,
@@ -43,5 +43,4 @@ module.exports = (sequelize, DataTypes) => {
   Shelf.beforeCreate((shelf, options) => {
     shelf.slug = slugify(`${shelf.createdBy}-${shelf.name}`)
   })
-  return Shelf
 }
