@@ -13,15 +13,15 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST || 'host.docker.internal',
     env: process.env.DB_PORT,
     logging: false,
-    dialect: process.env.DB_DIALECT,
+    dialect: 'mysql',
     operatorsAliases: 0,
     pool: {
       maxConnections: 5,
       maxIdleTime: 30
+    },
+    dialectOptions: {
+      ssl: 'Amazon RDS'
     }
-    // dialectOptions: {
-    //   ssl: 'Amazon RDS'
-    // }
   }
 )
 require('./../models/media')(sequelize)
