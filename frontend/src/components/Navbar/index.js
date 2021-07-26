@@ -1,26 +1,20 @@
 import React, { Fragment } from 'react'
 import { NavLink as Link } from 'react-router-dom'
 
-import {
-  Nav,
-  NavLink,
-  Bars,
-  NavMenu,
-  NavBtn,
-  NavBtnLink
-} from './NavbarElements'
+import { Logo, Nav, NavLink, Bars, NavMenu, NavBtn } from './NavbarElements'
+import logo from './../../images/logo.png'
 
-const Navbar = ({ setIsOpen }) => {
+const Navbar = ({ setIsOpen = () => {} }) => {
   return (
     <>
       <Nav>
         <NavLink to='/'>
-          <h1>DigiShelf</h1>
+          <Logo src={logo} />
         </NavLink>
         <Bars onClick={() => setIsOpen(true)} />
         <NavMenu>
-          <NavLink to='/about'>Login</NavLink>
-          <Link to='/services'>
+          <NavLink to='/login'>Login</NavLink>
+          <Link to='/sign-up'>
             <NavBtn>Sign Up</NavBtn>
           </Link>
         </NavMenu>
