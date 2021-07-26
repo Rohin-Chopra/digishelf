@@ -6,19 +6,23 @@ import HomeScreen from './screens/HomeScreen'
 import ShelfScreen from './screens/ShelfScreen'
 import ShelvesScreen from './screens/ShelvesScreen'
 import Navbar from './components/Navbar'
+import Sidebar from './components/Sidebar'
 
 import './App.css'
 
 function App() {
+  const [isOpen, setIsOpen] = useState(false)
+
   return (
     <ThemeProvider theme={theme}>
       <Router>
         <>
-          <Navbar />
+          <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+          <Navbar setIsOpen={setIsOpen} />
           <Switch>
             <Route path='/' exact component={HomeScreen} />
-            <Route path='/about' component={ShelfScreen} />
-            <Route path='/services' component={ShelvesScreen} />
+            <Route path='/sign-up' component={ShelfScreen} />
+            <Route path='/login' component={ShelvesScreen} />
           </Switch>
         </>
       </Router>
