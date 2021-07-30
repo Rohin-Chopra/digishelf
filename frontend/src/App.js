@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
 import theme from './theme'
-import HomeScreen from './screens/HomeScreen'
-import ShelfScreen from './screens/ShelfScreen'
-import ShelvesScreen from './screens/ShelvesScreen'
+import Home from './pages/Home'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
-
+import Footer from './components/Footer'
+import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import './App.css'
+import SignUp from './pages/SignUp'
 
 function App() {
   const [isOpen, setIsOpen] = useState(false)
@@ -20,10 +20,10 @@ function App() {
           <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
           <Navbar setIsOpen={setIsOpen} />
           <Switch>
-            <Route path='/' exact component={HomeScreen} />
-            <Route path='/sign-up' component={ShelfScreen} />
-            <Route path='/login' component={ShelvesScreen} />
+            <Route path='/' exact component={Home} />
+            <Route path='/sign-up' component={SignUp} />
           </Switch>
+          <Footer />
         </>
       </Router>
     </ThemeProvider>
