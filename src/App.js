@@ -11,6 +11,7 @@ import Footer from './components/Footer'
 import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import Login from './pages/Login'
+import Logout from './pages/Logout'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import './App.css'
 
@@ -30,6 +31,7 @@ const App = () => {
         <Switch>
           <Route path='/' exact component={Home} />
           <Route path='/login' component={Login} />
+          <Route path='/logout' component={Logout} />
         </Switch>
         <Footer />
       </Router>

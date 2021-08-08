@@ -28,9 +28,18 @@ export const verifyUser = async (username, code) => {
 export const signIn = async (username, password) => {
   try {
     const user = await Auth.signIn(username, password)
-    return user
+    return [user, null]
   } catch (error) {
     return [null, error]
+  }
+}
+
+export const signOut = async () => {
+  try {
+    await Auth.signOut()
+    return true
+  } catch (error) {
+    return false
   }
 }
 
