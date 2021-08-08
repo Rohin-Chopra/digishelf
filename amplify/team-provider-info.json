@@ -14,6 +14,12 @@
     "categories": {
       "auth": {
         "digishelf4114617d": {}
+      },
+      "function": {
+        "digishelfLambdaFunction": {
+          "deploymentBucketName": "amplify-digishelf-dev-155406-deployment",
+          "s3Key": "amplify-builds/digishelfLambdaFunction-484f68752b6666317937-build.zip"
+        }
       }
     }
   }
