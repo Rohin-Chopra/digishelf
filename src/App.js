@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import Amplify, { Auth, API } from 'aws-amplify'
 
-function App() {
+const App = () => {
   return <div className='App'>Hello from Digishelf</div>
 }
 
