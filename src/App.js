@@ -10,6 +10,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
+import Login from './pages/Login'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import './App.css'
 
@@ -18,7 +19,6 @@ const App = () => {
 
   useEffect(() => {
     getCurrentUser().then((res) => {
-      console.log(res)
       setAuthContext(res)
     })
   }, [])
@@ -29,6 +29,7 @@ const App = () => {
         <Navbar />
         <Switch>
           <Route path='/' exact component={Home} />
+          <Route path='/login' component={Login} />
         </Switch>
         <Footer />
       </Router>
