@@ -10,6 +10,11 @@
       "StackName": "amplify-digishelf-dev-155406",
       "StackId": "arn:aws:cloudformation:ap-southeast-2:677065002466:stack/amplify-digishelf-dev-155406/0ac136b0-f80d-11eb-bf2b-06435081cd1e",
       "AmplifyAppId": "d23iypz8f8haem"
+    },
+    "categories": {
+      "auth": {
+        "digishelf4114617d": {}
+      }
     }
   }
 }
