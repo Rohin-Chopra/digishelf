@@ -1,22 +1,21 @@
 {
   "auth": {
-    "digishelf4114617d": {
+    "digishelf": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
       "customAuth": false,
       "frontendAuthConfig": {
-        "loginMechanism": [
-          "EMAIL",
-          "PREFERRED_USERNAME"
-        ],
+        "loginMechanism": [],
         "signupAttributes": [
           "EMAIL",
           "NAME"
         ],
         "passwordProtectionSettings": {
           "passwordPolicyMinLength": 8,
-          "passwordPolicyCharacters": []
+          "passwordPolicyCharacters": [
+            "REQUIRES_LOWERCASE"
+          ]
         },
         "mfaConfiguration": "OFF",
         "mfaTypes": [

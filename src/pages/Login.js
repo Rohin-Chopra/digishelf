@@ -7,6 +7,7 @@ import AuthContext from '../context/AuthContext'
 import { signIn } from '../utils/auth'
 import GoogleIcon from './../images/google-icon.svg'
 import bookshelfImg from './../images/bookshelf-with-person.png'
+import { Auth } from 'aws-amplify'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -95,7 +96,10 @@ const Login = () => {
               Or Login with
             </p>
             <div className='flex justify-evenly'>
-              <Button className='px-6 mx-2'>
+              <Button
+                className='px-6 mx-2'
+                onClick={() => Auth.federatedSignIn({ provider: 'Google' })}
+              >
                 <img src={GoogleIcon} className='h-8' />
               </Button>
               <Button className='px-6 mx-2'>
