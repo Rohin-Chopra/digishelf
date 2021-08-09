@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { Redirect } from 'react-router-dom'
 import isEmail from 'validator/lib/isEmail'
 import isEmpty from 'validator/lib/isEmpty'
@@ -13,7 +13,7 @@ import GoogleIcon from './../images/google-icon.svg'
 import bookshelfImg from './../images/bookshelf-with-person.png'
 import Amplify, { Auth, Hub } from 'aws-amplify'
 
-const SignUp = (props) => {
+const SignUp = ({ history }) => {
   const [inputs, setInputs] = useState({
     name: '',
     email: '',
@@ -35,9 +35,15 @@ const SignUp = (props) => {
     message: ''
   })
 
-  const [redirectToVerify, setRedirectToVerify] = useState(false)
-
   const [authContext, setAuthContext] = useContext(AuthContext)
+
+  useEffect(() => {
+    Auth.currentAuthenticatedUser().then((user) => {
+      if (user) {
+        history.push('/')
+      }
+    })
+  }, [])
 
   const validate = {
     name: (val) => !isEmpty(val),
@@ -95,7 +101,7 @@ const SignUp = (props) => {
           color: 'green-500',
           message: 'Success!'
         })
-        setRedirectToVerify(true)
+        history.push('/verify')
       }
       setIsLoading(false)
     }
@@ -123,7 +129,6 @@ const SignUp = (props) => {
             className='transform -rotate-12 h-96'
           />
         </div>
-        {redirectToVerify ? <Redirect to='/verify' /> : null}
         <div className='py-4 px-10 md:px-20 md:col-span-2 mx-auto'>
           <h1 className='prose prose-2xl font-bold'>Welcome to Digishelf</h1>
           <p className='prose text-gray-500'>
@@ -247,7 +252,10 @@ const SignUp = (props) => {
               >
                 <img src={GoogleIcon} className='h-8' />
               </Button>
-              <Button className='px-6 mx-2'>
+              <Button
+                className='px-6 mx-2'
+                onClick={() => Auth.federatedSignIn({ provider: 'Facebook' })}
+              >
                 <FacebookIcon
                   className='text-2xl'
                   style={{

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { Redirect } from 'react-router'
 import Button from '../components/Button'
 import ClipLoader from 'react-spinners/ClipLoader'
@@ -9,13 +9,20 @@ import GoogleIcon from './../images/google-icon.svg'
 import bookshelfImg from './../images/bookshelf-with-person.png'
 import { Auth } from 'aws-amplify'
 
-const Login = () => {
+const Login = ({ history }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [authContext, setAuthContext] = useContext(AuthContext)
-  const [redirectToDashboard, setRedirectToDashboard] = useState(false)
+
+  useEffect(() => {
+    Auth.currentAuthenticatedUser().then((user) => {
+      if (user) {
+        history.push('/')
+      }
+    })
+  }, [])
 
   const handleSubmit = async (event) => {
     setIsLoading(true)
@@ -30,12 +37,11 @@ const Login = () => {
     }
     setIsLoading(false)
     setAuthContext(user)
-    setRedirectToDashboard(true)
+    history.push('/shelves')
   }
 
   return (
     <main className='flex'>
-      {redirectToDashboard ? <Redirect to='/shelves' /> : null}
       <div className='md:grid md:grid-cols-4 w-full pt-8 md:pt-0'>
         <div className='hidden md:block bg-pink-200 pt-4 px-4 col-span-1'>
           <img src={bookshelfImg} className='transform -rotate-12 h-96' />
@@ -102,7 +108,10 @@ const Login = () => {
               >
                 <img src={GoogleIcon} className='h-8' />
               </Button>
-              <Button className='px-6 mx-2'>
+              <Button
+                className='px-6 mx-2'
+                onClick={() => Auth.federatedSignIn({ provider: 'Facebook' })}
+              >
                 <FacebookIcon
                   className='text-2xl'
                   style={{

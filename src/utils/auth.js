@@ -22,7 +22,7 @@ export const verifyUser = async (username, code) => {
     await Auth.confirmSignUp(username, code)
     return true
   } catch (error) {
-    console.log(error);
+    console.log(error)
     return false
   }
 }
@@ -55,6 +55,8 @@ export const getCurrentUser = async () => {
     token
   }
 }
+
+window.Auth = Auth
 export const getCurrentUserInfo = async () => {
   const user = await Auth.currentUserInfo()
   return user

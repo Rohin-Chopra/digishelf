@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import { createBrowserHistory } from 'history'
 import AuthContext from './context/AuthContext'
 import { getCurrentUser } from './utils/auth'
 import Navbar from './components/Navbar'
@@ -13,6 +14,7 @@ import VerifyUser from './pages/VerifyUser'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import './App.css'
 
+const history = createBrowserHistory()
 const App = () => {
   const [authContext, setAuthContext] = useState(null)
 
@@ -24,7 +26,7 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={[authContext, setAuthContext]}>
-      <Router>
+      <Router history={history}>
         <Navbar />
         <Switch>
           <Route path='/' exact component={Home} />
@@ -38,5 +40,4 @@ const App = () => {
     </AuthContext.Provider>
   )
 }
-
 export default App
