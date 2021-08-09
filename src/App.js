@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route
-} from 'react-router-dom'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import AuthContext from './context/AuthContext'
 import { getCurrentUser } from './utils/auth'
 import Navbar from './components/Navbar'
@@ -12,6 +8,8 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Logout from './pages/Logout'
+import SignUp from './pages/SignUp'
+import VerifyUser from './pages/VerifyUser'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import './App.css'
 
@@ -32,6 +30,8 @@ const App = () => {
           <Route path='/' exact component={Home} />
           <Route path='/login' component={Login} />
           <Route path='/logout' component={Logout} />
+          <Route path='/sign-up' component={SignUp} />
+          <Route path='/verify' component={VerifyUser} />
         </Switch>
         <Footer />
       </Router>

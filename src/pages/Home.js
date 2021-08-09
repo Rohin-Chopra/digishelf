@@ -50,7 +50,6 @@ const HomeScreen = () => {
     const res = await movieDBAPI.get('/discover/movie', {
       params: { api_key: '4e02f274e1c605a2e0b08bac93f177e4' }
     })
-    console.log(res);
     const temp = []
     res.data.results.forEach((movie) => {
       temp.push(`https://image.tmdb.org/t/p/w500/${movie.poster_path}`)
