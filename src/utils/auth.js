@@ -10,8 +10,9 @@ export const signUp = async (username, password, { email, name }) => {
         name
       }
     })
-    return user
+    return [user]
   } catch (error) {
+    console.log(error)
     return [null, error]
   }
 }
@@ -21,10 +22,10 @@ export const verifyUser = async (username, code) => {
     await Auth.confirmSignUp(username, code)
     return true
   } catch (error) {
+    console.log(error);
     return false
   }
 }
-
 export const signIn = async (username, password) => {
   try {
     const user = await Auth.signIn(username, password)
@@ -53,4 +54,8 @@ export const getCurrentUser = async () => {
     user,
     token
   }
+}
+export const getCurrentUserInfo = async () => {
+  const user = await Auth.currentUserInfo()
+  return user
 }

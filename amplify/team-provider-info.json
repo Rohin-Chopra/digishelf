@@ -13,7 +13,9 @@
     },
     "categories": {
       "auth": {
-        "digishelf4114617d": {},
+        "digishelf4114617d": {
+          "googleClientId": "131027093129-aode7kqftnbjn85e226pd7ugl31saj9k.apps.googleusercontent.com"
+        },
         "digishelf": {}
       },
       "function": {
