@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { NavLink as Link } from 'react-router-dom'
-import { FaBars, FaTimes } from 'react-icons/fa'
-
+import { FaBars, FaTimes, FaSignOutAlt } from 'react-icons/fa'
 import logo from './../images/logo.png'
 import Button from './Button'
 import AuthContext from '../context/AuthContext'
@@ -10,10 +9,6 @@ const Navbar = () => {
   const [authContext] = useContext(AuthContext)
   const loggedIn = authContext !== null
   const [isOpen, setIsOpen] = useState(false)
-
-  const handleClick = () => {
-    console.log(11)
-  }
 
   return (
     <>
@@ -42,9 +37,11 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to='/logout'
-                  className='text-white no-underline mr-4 transition duration-200 ease-in-out'
+                  className='text-black no-underline mr-4 transition duration-200 ease-in-out'
                 >
-                  Logout
+                  <Button className='bg-white text-black'>
+                    Logout <FaSignOutAlt className='inline-block' />
+                  </Button>
                 </Link>
               </>
             ) : (
@@ -92,7 +89,9 @@ const Navbar = () => {
                       className='text-white no-underline my-2 transition duration-200 ease-in-out'
                       onClick={() => setIsOpen(false)}
                     >
-                      Logout
+                      <Button className='bg-white text-black'>
+                        Logout <FaSignOutAlt className='inline-block' />
+                      </Button>
                     </Link>
                   </>
                 ) : (
