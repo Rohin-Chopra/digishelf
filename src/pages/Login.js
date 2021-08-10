@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Redirect } from 'react-router'
 import Button from '../components/Button'
 import ClipLoader from 'react-spinners/ClipLoader'
 import { FaFacebookSquare as FacebookIcon } from 'react-icons/fa'
@@ -22,7 +21,7 @@ const Login = ({ history }) => {
         history.push('/')
       }
     })
-  }, [])
+  }, [history])
 
   const handleSubmit = async (event) => {
     setIsLoading(true)

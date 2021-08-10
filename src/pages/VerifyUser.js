@@ -4,7 +4,7 @@ import Button from '../components/Button'
 import Snackbar from '../components/Snackbar'
 import ClipLoader from 'react-spinners/ClipLoader'
 import AuthContext from '../context/AuthContext'
-import { getCurrentUser, getCurrentUserInfo, verifyUser } from '../utils/auth'
+import { verifyUser } from '../utils/auth'
 
 const VerifyUser = (props) => {
   const [redirectToHome, setRedirectToHome] = useState(false)
@@ -15,21 +15,16 @@ const VerifyUser = (props) => {
     color: '',
     message: ''
   })
-  const [authContext, setAuthContext] = useContext(AuthContext)
+  const [authContext] = useContext(AuthContext)
 
   // const { username: email } = authContext.user
   const [isLoading, setIsLoading] = useState(false)
   const [redirectToLogin, setRedirectToLogin] = useState(false)
-  function asyncParse(string) {
-    console.log('hi')
-    return new Response(string).json()
-  }
 
   useEffect(() => {
     setUsername(authContext?.user?.username)
     if (authContext?.user?.attributes?.email_verified) {
       setRedirectToHome(true)
-      // TODO: Add redirect to home page if the user is verified
     }
   }, [authContext])
 
