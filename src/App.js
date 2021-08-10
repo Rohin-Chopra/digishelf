@@ -13,6 +13,9 @@ import SignUp from './pages/SignUp'
 import VerifyUser from './pages/VerifyUser'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import './App.css'
+import AddShelf from './pages/AddShelf'
+import GetMyShelves from './pages/GetMyShelves'
+import GetShelf from './pages/GetShelf'
 
 const history = createBrowserHistory()
 const App = () => {
@@ -34,6 +37,9 @@ const App = () => {
           <Route path='/logout' component={Logout} />
           <Route path='/sign-up' component={SignUp} />
           <Route path='/verify' component={VerifyUser} />
+          <ProtectedRoute path='/shelves/add' exact component={AddShelf} />
+          <ProtectedRoute path='/shelves' exact component={GetMyShelves} />
+          <ProtectedRoute path='/shelves/:slug' exact component={GetShelf} />
         </Switch>
         <Footer />
       </Router>
