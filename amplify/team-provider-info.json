@@ -21,7 +21,7 @@
       "function": {
         "digishelfLambdaFunction": {
           "deploymentBucketName": "amplify-digishelf-dev-155406-deployment",
-          "s3Key": "amplify-builds/digishelfLambdaFunction-69496461576c4c777533-build.zip"
+          "s3Key": "amplify-builds/digishelfLambdaFunction-4136374f595147573437-build.zip"
         }
       }
     }
