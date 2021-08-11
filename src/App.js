@@ -16,6 +16,7 @@ import './App.css'
 import AddShelf from './pages/AddShelf'
 import GetMyShelves from './pages/GetMyShelves'
 import GetShelf from './pages/GetShelf'
+import AddMediaToShelf from './pages/AddMediaToShelf'
 
 const history = createBrowserHistory()
 const App = () => {
@@ -39,7 +40,12 @@ const App = () => {
           <Route path='/verify' component={VerifyUser} />
           <ProtectedRoute path='/shelves/add' exact component={AddShelf} />
           <ProtectedRoute path='/shelves' exact component={GetMyShelves} />
-          <ProtectedRoute path='/shelves/:slug' exact component={GetShelf} />
+          <ProtectedRoute path='/shelves/:id' exact component={GetShelf} />
+          <ProtectedRoute
+            path='/shelves/:id/media/add'
+            exact
+            component={AddMediaToShelf}
+          />
         </Switch>
         <Footer />
       </Router>

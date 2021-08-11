@@ -61,3 +61,13 @@ export const getCurrentUserInfo = async () => {
   const user = await Auth.currentUserInfo()
   return user
 }
+
+export const getAccessJwtToken = async () => {
+  const session = await Auth.currentSession()
+  return session.getAccessToken().getJwtToken()
+}
+
+const checkIsTokenExpired = async () => {
+  const currentUnixTime = new Date.getTime() / 1000
+  return currentUnixTime < null
+}
