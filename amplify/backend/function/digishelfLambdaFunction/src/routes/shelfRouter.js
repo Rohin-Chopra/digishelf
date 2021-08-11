@@ -14,10 +14,10 @@ const {
 
 router.route('/').get(getAllShelves).post(addShelf)
 
-router.route('/:slug').get(getShelf).put(editShelf).delete(deleteShelf)
+router.route('/:id').get(getShelf).put(editShelf).delete(deleteShelf)
 
-router.route('/:slug/media').post(addMediaToShelf)
+router.route('/:id/media').post(addMediaToShelf)
 
-router.route('/:slug/media/:mediaId').delete(deleteMediaFromShelf)
+router.route('/:id/media/:mediaId').delete(deleteMediaFromShelf)
 
 module.exports = router
