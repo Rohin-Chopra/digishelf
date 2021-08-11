@@ -32,15 +32,6 @@ module.exports = (sequelize) => {
     coverImg: {
       type: DataTypes.STRING(200),
       allowNull: false
-    },
-    slug: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      unique: true
     }
-  })
-
-  Shelf.beforeCreate((shelf, options) => {
-    shelf.slug = slugify(`${shelf.createdBy}-${shelf.name}`)
   })
 }

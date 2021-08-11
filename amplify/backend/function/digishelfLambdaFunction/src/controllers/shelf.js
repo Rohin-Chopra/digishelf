@@ -8,7 +8,7 @@ exports.getShelf = asyncHandler(async (req, res, next) => {
   const shelf = await Shelf.findOne({
     where: {
       ...req.body,
-      slug: req.params.slug
+      id: req.params.id
     },
     include: [
       {
@@ -25,7 +25,7 @@ exports.getShelf = asyncHandler(async (req, res, next) => {
     shelf === null ||
     (shelf.publicity === 'private' && shelf.createdBy !== req.username)
   ) {
-    return next(new AppError('Could not find a shelf with this slug', 404))
+    return next(new AppError('Could not find a shelf with this id', 404))
   }
 
   res.status(200).json({
@@ -63,7 +63,6 @@ exports.addShelf = asyncHandler(async (req, res, next) => {
   const { nanoid } = require('nanoid')
 
   let shelf
-
   shelf = await Shelf.findOne({
     where: { name: req.body.name }
   })
@@ -75,13 +74,22 @@ exports.addShelf = asyncHandler(async (req, res, next) => {
       )
     )
   }
+  AWS.config.update({ region: 'ap-southeast-2' })
 
-  const s3 = new AWS.S3()
-  const fileContent = Buffer.from(req.files.coverImg.data, 'binary')
+  const s3 = new AWS.S3({})
+  const { base64 } = req.body.coverImg
+  const base64Data = new Buffer.from(
+    base64.replace(/^data:image\/\w+;base64,/, ''),
+    'base64'
+  )
+  const type = base64.split(';')[0].split('/')[1]
+
   const params = {
     Bucket: process.env.BUCKET_NAME,
-    Key: `images/${nanoid()}-${req.files.coverImg.name}`,
-    Body: fileContent
+    Key: `images/${nanoid()}-${req.body.coverImg.name}`,
+    ContentEncoding: 'base64',
+    ContentType: `image/${type}`, // required. Notice the back ticks
+    Body: base64Data
   }
   const data = await s3.upload(params).promise()
 
@@ -101,7 +109,7 @@ exports.addShelf = asyncHandler(async (req, res, next) => {
 
 exports.editShelf = asyncHandler(async (req, res, next) => {
   const shelf = await Shelf.findOne({
-    where: { slug: req.params.slug, createdBy: req.username }
+    where: { id: req.params.id, createdBy: req.username }
   })
   if (shelf === null) {
     return next(
@@ -118,7 +126,7 @@ exports.editShelf = asyncHandler(async (req, res, next) => {
     },
     {
       where: {
-        slug: req.params.slug
+        id: req.params.id
       }
     }
   )
@@ -132,7 +140,7 @@ exports.deleteShelf = asyncHandler(async (req, res, next) => {
   // check if the shelf exists, and if not throw an error
 
   const shelf = await Shelf.findOne({
-    where: { slug: req.params.slug, createdBy: req.username }
+    where: { id: req.params.id, createdBy: req.username }
   })
   if (shelf === null) {
     return next(
@@ -165,10 +173,10 @@ exports.deleteShelf = asyncHandler(async (req, res, next) => {
 exports.addMediaToShelf = asyncHandler(async (req, res, next) => {
   // find the shelf and if it does not exist, throw an error
   const shelf = await Shelf.findOne({
-    where: { slug: req.params.slug, createdBy: req.username }
+    where: { id: req.params.id, createdBy: req.username }
   })
   if (shelf === null) {
-    next(new AppError('The shelf with this slug does not exist', 404))
+    next(new AppError('The shelf with this id does not exist', 404))
   }
 
   // create or get the media
@@ -199,10 +207,10 @@ exports.addMediaToShelf = asyncHandler(async (req, res, next) => {
 exports.deleteMediaFromShelf = asyncHandler(async (req, res, next) => {
   // find the shelf and if it does not exist, throw an error
   const shelf = await Shelf.findOne({
-    where: { slug: req.params.slug, createdBy: req.username }
+    where: { id: req.params.id, createdBy: req.username }
   })
   if (shelf === null) {
-    return next(new AppError('The shelf with this slug does not exist', 404))
+    return next(new AppError('The shelf with this id does not exist', 404))
   }
 
   // if the media has not been already added to shelf, throw an error
