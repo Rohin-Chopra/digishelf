@@ -46,5 +46,11 @@
         }
       ]
     }
+  },
+  "storage": {
+    "s3DigishelfBucket": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation"
+    }
   }
 }
