@@ -7,6 +7,7 @@ import { signIn } from '../utils/auth'
 import GoogleIcon from './../images/google-icon.svg'
 import bookshelfImg from './../images/bookshelf-with-person.png'
 import { Auth } from 'aws-amplify'
+import { Link } from 'react-router-dom'
 
 const Login = ({ history }) => {
   const [email, setEmail] = useState('')
@@ -124,6 +125,11 @@ const Login = ({ history }) => {
                 />
               </Button>
             </div>
+            <Link to='/sign-up'>
+              <p className='prose mt-4 text-center text-gray-400'>
+                Don't have an account ? Sign up now!
+              </p>
+            </Link>
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import isEmail from 'validator/lib/isEmail'
 import isEmpty from 'validator/lib/isEmpty'
 import ClipLoader from 'react-spinners/ClipLoader'
@@ -263,6 +264,11 @@ const SignUp = ({ history }) => {
                 />
               </Button>
             </div>
+            <Link to='/login'>
+              <p className='prose mt-4 text-center text-gray-400'>
+                Already have an account? Log in now!
+              </p>
+            </Link>
           </form>
         </div>
       </div>
