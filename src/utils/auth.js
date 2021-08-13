@@ -67,7 +67,7 @@ export const getAccessJwtToken = async () => {
   return session.getAccessToken().getJwtToken()
 }
 
-const checkIsTokenExpired = async () => {
+export const checkIsTokenExpired = async () => {
   const currentUnixTime = new Date.getTime() / 1000
   return currentUnixTime < null
 }

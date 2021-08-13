@@ -1,5 +1,4 @@
 import { API } from 'aws-amplify'
-import axios from 'axios'
 import React, { useState, useRef } from 'react'
 import { FaCheckCircle, FaRegTimesCircle } from 'react-icons/fa'
 import Button from '../components/Button'
@@ -53,18 +52,17 @@ const AddShelf = ({ history }) => {
       const { token } = await getCurrentUser()
 
       try {
-        await axios.post(
-          'https://sdhr3phfz1.execute-api.ap-southeast-2.amazonaws.com/dev/shelves',
-          {
+        await API.post('digishelfAPI', '/shelves', {
+          headers: {
+            Authorization: token
+          },
+          body: {
             coverImg: img,
             name: inputs.name,
             description: inputs.description,
             visibility: inputs.visibility
-          },
-          {
-            headers: { Authorization: token }
           }
-        )
+        })
         history.push('/shelves')
       } catch (error) {
         console.log(error)

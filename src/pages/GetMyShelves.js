@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { API, Auth } from 'aws-amplify'
+import { API } from 'aws-amplify'
 import { getCurrentUser } from '../utils/auth'
 import { FaPlusCircle } from 'react-icons/fa'
 import Button from '../components/Button'
-import axios from 'axios'
 
 const ShelfCard = ({ shelf, history }) => {
   const [isMouseOver, setIsMouseOver] = useState(false)
@@ -20,7 +19,7 @@ const ShelfCard = ({ shelf, history }) => {
     >
       <img
         src={`https://rohin-bucket.s3.ap-southeast-2.amazonaws.com/${shelf.coverImg}`}
-        className='w-full h-full rounded shadow'
+        className='w-full h-full rounded shadow  opacity-90'
         alt='lorem ipsum'
       />
       <span
@@ -47,16 +46,12 @@ const GetMyShelves = ({ history, match }) => {
 
   const makeRequest = async () => {
     const { token } = await getCurrentUser()
-    const { data } = await axios.get(
-      'https://sdhr3phfz1.execute-api.ap-southeast-2.amazonaws.com/dev/shelves',
-      {
-        headers: {
-          Authorization: token
-        }
+    const { data } = await API.get('digishelfAPI', '/shelves/my-shelves', {
+      headers: {
+        Authorization: token
       }
-    )
-    console.log(data.data.shelves)
-    setShelves(data.data.shelves)
+    })
+    setShelves(data.shelves)
   }
 
   useEffect(() => {
@@ -64,23 +59,32 @@ const GetMyShelves = ({ history, match }) => {
   }, [])
 
   return (
-    <div className='container py-4 px-6 mx-auto'>
-      <h1 className='font-bold text-2xl'>Your Shelves</h1>
-      <div>
-        <Button
-          className='bg-green-500 text-white shadow mx-auto'
-          onClick={() => history.push('/shelves/add')}
-        >
-          {' '}
-          Add Shelf{' '}
-        </Button>
-        <div className='py-4 grid grid-cols-1 md:grid-cols-3 justify-items-center'>
-          {shelves.map((shelf) => {
-            return <ShelfCard key={shelf.id} shelf={shelf} history={history} />
-          })}
+    <main className='flex flex-col'>
+      <div className='container py-4 px-6 mx-auto'>
+        <div className='flex justify-between items-center'>
+          <div>
+            <h1 className='font-bold text-2xl'>Your Shelves</h1>
+          </div>
+          <div>
+            <Button
+              className='bg-green-500 text-white shadow mx-auto'
+              onClick={() => history.push('/shelves/add')}
+            >
+              Add Shelf <FaPlusCircle className='ml-1 inline text-xl' />
+            </Button>
+          </div>
+        </div>
+        <div>
+          <div className='py-4 grid grid-cols-1 md:grid-cols-3 justify-items-center'>
+            {shelves.map((shelf) => {
+              return (
+                <ShelfCard key={shelf.id} shelf={shelf} history={history} />
+              )
+            })}
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
 

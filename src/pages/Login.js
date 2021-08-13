@@ -43,7 +43,11 @@ const Login = ({ history }) => {
     <main className='flex'>
       <div className='md:grid md:grid-cols-4 w-full pt-8 md:pt-0'>
         <div className='hidden md:block bg-pink-200 pt-4 px-4 col-span-1'>
-          <img src={bookshelfImg} className='transform -rotate-12 h-96' />
+          <img
+            alt='a guy with a bookshelf'
+            src={bookshelfImg}
+            className='transform -rotate-12 h-96'
+          />
         </div>
 
         <div className='py-4 px-10 md:px-20 md:col-span-3 md:flex md:justify-center md:items-center'>
@@ -105,7 +109,7 @@ const Login = ({ history }) => {
                 className='px-6 mx-2'
                 onClick={() => Auth.federatedSignIn({ provider: 'Google' })}
               >
-                <img src={GoogleIcon} className='h-8' />
+                <img alt='google' src={GoogleIcon} className='h-8' />
               </Button>
               <Button
                 className='px-6 mx-2'

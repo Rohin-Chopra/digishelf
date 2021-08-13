@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Carousel } from 'react-responsive-carousel'
 import { FaUserPlus as AddUserIcon } from 'react-icons/fa'
 import { IoLibrary as LibraryIcon } from 'react-icons/io5'
@@ -70,10 +70,12 @@ const HomeScreen = () => {
                 Capture your favorite content
               </h1>
               <p className='prose text-white'>
-                Digishelf allows you to capture your favorite tv shows and movies
-                on a digital shelf
+                Digishelf allows you to capture your favorite tv shows and
+                movies on a digital shelf
               </p>
-              <Link to='/sign-up'><Button className='bg-secondary mt-2'>Get Started</Button></Link>
+              <Link to='/sign-up'>
+                <Button className='bg-secondary mt-2'>Get Started</Button>
+              </Link>
             </div>
             <div className='hidden md:flex md:justify-end'>
               <img className='h-60' src={bookshelfImg} />

@@ -41,7 +41,7 @@ const SignUp = ({ history }) => {
         history.push('/')
       }
     })
-  }, [])
+  }, [history])
 
   const validate = {
     name: (val) => !isEmpty(val),
@@ -248,7 +248,7 @@ const SignUp = ({ history }) => {
                 className='px-6 mx-2'
                 onClick={() => Auth.federatedSignIn({ provider: 'Google' })}
               >
-                <img src={GoogleIcon} className='h-8' />
+                <img alt='google' src={GoogleIcon} className='h-8' />
               </Button>
               <Button
                 className='px-6 mx-2'
