@@ -1,28 +1,45 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Route, Redirect } from 'react-router-dom'
-import AuthContext from '../context/AuthContext'
+import BeatLoader from 'react-spinners/BeatLoader'
+import { getCurrentUser } from '../utils/auth'
 
 const ProtectedRoute = ({ component: Component, ...rest }) => {
-  const [user] = useContext(AuthContext)
-  console.log(user);
-  
+  const [user, setUser] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    getCurrentUser().then((u) => {
+      setUser(u)
+      setIsLoading(false)
+    })
+  }, [])
+
   return (
     <Route
       {...rest}
       render={(props) => {
-        if (user !== null) {
-          return <Component {...props} />
-        } else {
+        if (isLoading) {
           return (
-            <Redirect
-              to={{
-                pathname: '/login',
-                state: {
-                  from: props.location
-                }
-              }}
-            />
+            <main className='flex flex-col items-center justify-center'>
+              <BeatLoader />
+              Loading
+            </main>
           )
+        } else {
+          if (user !== null) {
+            return <Component {...props} />
+          } else {
+            return (
+              <Redirect
+                to={{
+                  pathname: '/login',
+                  state: {
+                    from: props.location
+                  }
+                }}
+              />
+            )
+          }
         }
       }}
     />
