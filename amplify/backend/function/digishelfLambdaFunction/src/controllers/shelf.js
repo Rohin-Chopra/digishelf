@@ -86,7 +86,7 @@ exports.addShelf = asyncHandler(async (req, res, next) => {
 
   let shelf
   shelf = await Shelf.findOne({
-    where: { name: req.body.name }
+    where: { name: req.body.name, createdBy: req.username }
   })
   if (shelf !== null) {
     return next(
