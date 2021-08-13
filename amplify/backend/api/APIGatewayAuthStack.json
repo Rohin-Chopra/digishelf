@@ -11,7 +11,7 @@
     "env": {
       "Type": "String"
     },
-    "digishelfAPI": {
+    "digishelfApi": {
       "Type": "String"
     }
   },
@@ -52,7 +52,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -82,7 +82,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -112,7 +112,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -142,7 +142,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -172,7 +172,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -202,7 +202,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -232,7 +232,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -262,7 +262,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -292,7 +292,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -322,7 +322,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -375,7 +375,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -405,7 +405,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -435,7 +435,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -465,7 +465,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -495,7 +495,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -525,7 +525,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -555,7 +555,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -585,7 +585,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -615,7 +615,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {
@@ -645,7 +645,7 @@
                       },
                       ":",
                       {
-                        "Ref": "digishelfAPI"
+                        "Ref": "digishelfApi"
                       },
                       "/",
                       {

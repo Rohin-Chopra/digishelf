@@ -35,7 +35,7 @@ const GetShelf = ({ history, match }) => {
   const fetchShelf = async () => {
     const { user, token } = await getCurrentUser()
     const { shelf } = await API.get(
-      'digishelfAPI',
+      'digishelfApi',
       `/shelves/${match.params.id}`,
       {
         headers: {

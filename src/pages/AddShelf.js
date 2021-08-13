@@ -52,7 +52,7 @@ const AddShelf = ({ history }) => {
       const { token } = await getCurrentUser()
 
       try {
-        await API.post('digishelfAPI', '/shelves', {
+        await API.post('digishelfApi', '/shelves', {
           headers: {
             Authorization: token
           },

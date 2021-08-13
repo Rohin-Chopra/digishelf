@@ -82,7 +82,7 @@ const AddMediaToShelf = ({ history, match }) => {
     })
     const { token } = await getCurrentUser()
     try {
-      await API.post('digishelfAPI', `/shelves/${match.params.id}/media`, {
+      await API.post('digishelfApi', `/shelves/${match.params.id}/media`, {
         headers: {
           Authorization: token
         },

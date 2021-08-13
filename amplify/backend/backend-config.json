@@ -31,7 +31,22 @@
       "service": "Lambda"
     }
   },
-  "api": {},
+  "api": {
+    "digishelfApi": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "digishelfLambdaFunction",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ]
+    }
+  },
   "storage": {
     "s3DigishelfBucket": {
       "service": "S3",
