@@ -46,6 +46,7 @@ const GetMyShelves = ({ history, match }) => {
 
   const makeRequest = async () => {
     const { token } = await getCurrentUser()
+    console.log(token);
     const { data } = await API.get('digishelfAPI', '/shelves/my-shelves', {
       headers: {
         Authorization: token
