@@ -37,16 +37,16 @@
         
         
         
-      "digishelfApi": {
+      "digishelfAPI": {
         "Type": "AWS::ApiGateway::RestApi",
         "Properties": {
           "Description": "",
-          "Name": "digishelfApi",
+          "Name": "digishelfAPI",
           "Body": {
             "swagger": "2.0",
             "info": {
               "version": "2018-05-24T17:52:00Z",
-              "title": "digishelfApi"
+              "title": "digishelfAPI"
             },
             "host": {
                 "Fn::Join": [
@@ -336,7 +336,7 @@
       
         
 
-        "functiondigishelfLambdaFunctionPermissiondigishelfApi": {
+        "functiondigishelfLambdaFunctionPermissiondigishelfAPI": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
                 "FunctionName": 
@@ -360,7 +360,7 @@
                             },
                             ":",
                             {
-                                "Ref": "digishelfApi"
+                                "Ref": "digishelfAPI"
                             },
                             "/*/*/*"
                         ]
@@ -371,7 +371,7 @@
         
         
 
-      "DeploymentAPIGWdigishelfApi": {
+      "DeploymentAPIGWdigishelfAPI": {
         "Type": "AWS::ApiGateway::Deployment",
         "Properties": {
           "Description": "The Development stage deployment of your API.",
@@ -385,7 +385,7 @@
             ]
           },
           "RestApiId": {
-            "Ref": "digishelfApi"
+            "Ref": "digishelfAPI"
           }
         }
       }
@@ -393,15 +393,15 @@
     "Outputs": {
         "RootUrl": {
             "Description": "Root URL of the API gateway",
-            "Value": {"Fn::Join": ["", ["https://", {"Ref": "digishelfApi"}, ".execute-api.", {"Ref": "AWS::Region"}, ".amazonaws.com/", {"Fn::If": ["ShouldNotCreateEnvResources","Prod", {"Ref": "env"} ]}]]}
+            "Value": {"Fn::Join": ["", ["https://", {"Ref": "digishelfAPI"}, ".execute-api.", {"Ref": "AWS::Region"}, ".amazonaws.com/", {"Fn::If": ["ShouldNotCreateEnvResources","Prod", {"Ref": "env"} ]}]]}
         },
         "ApiName": {
           "Description": "API Friendly name",
-          "Value": "digishelfApi"
+          "Value": "digishelfAPI"
         },
         "ApiId": {
           "Description": "API ID (prefix of API URL)",
-          "Value": {"Ref": "digishelfApi"}
+          "Value": {"Ref": "digishelfAPI"}
         }
     }
   }

@@ -1,0 +1,30 @@
+{
+  "name": "hello_world",
+  "version": "1.0.0",
+  "description": "hello world sample for NodeJS",
+  "main": "app.js",
+  "repository": "https://github.com/awslabs/aws-sam-cli/tree/develop/samcli/local/init/templates/cookiecutter-aws-sam-hello-nodejs",
+  "author": "SAM CLI",
+  "license": "MIT",
+  "dependencies": {
+    "@vendia/serverless-express": "^4.3.9",
+    "axios": "^0.21.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "express-fileupload": "^1.2.1",
+    "mysql2": "^2.2.5",
+    "nanoid": "^3.1.20",
+    "sequelize": "^6.6.5",
+    "slugify": "^1.5.3"
+  },
+  "scripts": {
+    "test": "mocha tests/unit/",
+    "integ-test": "mocha tests/integration/"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.815.0",
+    "chai": "^4.2.0",
+    "mocha": "^8.2.1"
+  }
+}

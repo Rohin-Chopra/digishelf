@@ -32,7 +32,7 @@
     }
   },
   "api": {
-    "digishelfApi": {
+    "digishelfAPI": {
       "service": "API Gateway",
       "providerPlugin": "awscloudformation",
       "dependsOn": [
