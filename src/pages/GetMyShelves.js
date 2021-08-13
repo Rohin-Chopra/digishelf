@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { API } from 'aws-amplify'
-import { getCurrentUser } from '../utils/auth'
+import BeatLoader from 'react-spinners/BeatLoader'
 import { FaPlusCircle } from 'react-icons/fa'
 import Button from '../components/Button'
+import { getCurrentUser } from '../utils/auth'
 
 const ShelfCard = ({ shelf, history }) => {
   const [isMouseOver, setIsMouseOver] = useState(false)
@@ -43,15 +44,16 @@ const ShelfCard = ({ shelf, history }) => {
 
 const GetMyShelves = ({ history, match }) => {
   const [shelves, setShelves] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const makeRequest = async () => {
     const { token } = await getCurrentUser()
-    console.log(token);
     const { data } = await API.get('digishelfApi', '/shelves/my-shelves', {
       headers: {
         Authorization: token
       }
     })
+    setIsLoading(false)
     setShelves(data.shelves)
   }
 
@@ -77,6 +79,10 @@ const GetMyShelves = ({ history, match }) => {
         </div>
         <div>
           <div className='py-4 grid grid-cols-1 md:grid-cols-3 justify-items-center'>
+            <BeatLoader
+              css='grid-column: span 4 / span 4;'
+              loading={isLoading}
+            />
             {shelves.map((shelf) => {
               return (
                 <ShelfCard key={shelf.id} shelf={shelf} history={history} />

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { API } from 'aws-amplify'
-import { getCurrentUser } from '../utils/auth'
-import Button from '../components/Button'
-import movieDb from '../api/movieDb'
+import BeatLoader from 'react-spinners/BeatLoader'
 import { FaPlusCircle } from 'react-icons/fa'
+import Button from '../components/Button'
+import { getCurrentUser } from '../utils/auth'
+import movieDb from '../api/movieDb'
 
 const Media = ({ media }) => {
   const [imgUrl, setImgUrl] = useState('')
@@ -31,6 +32,7 @@ const Media = ({ media }) => {
 const GetShelf = ({ history, match }) => {
   const [shelf, setShelf] = useState(null)
   const [userName, setUserName] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
 
   const fetchShelf = async () => {
     const { user, token } = await getCurrentUser()
@@ -44,6 +46,7 @@ const GetShelf = ({ history, match }) => {
       }
     )
     setUserName(user.attributes.name)
+    setIsLoading(false)
     setShelf(shelf)
   }
 
@@ -74,6 +77,7 @@ const GetShelf = ({ history, match }) => {
           </div>
         </div>
         <div className='mt-2 grid md:grid-cols-4 gap-4 justify-items-center'>
+          <BeatLoader css='grid-column: span 4 / span 4;' loading={isLoading} />
           {shelf?.Media.map((media) => {
             return <Media key={media.id} media={media} />
           })}
