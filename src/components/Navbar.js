@@ -73,12 +73,12 @@ const Navbar = () => {
                 onClick={() => setIsOpen(false)}
               />
             </div>
-            <div className='text-white'>
+            <div>
               <div className='grid grid-cols-1 grid-rows-6 text-center text-2xl'>
                 {loggedIn ? (
                   <>
                     <Link
-                      to='/shelves'
+                      to='/shelves '
                       className='text-white no-underline my-2 transition duration-200 ease-in-out'
                       onClick={() => setIsOpen(false)}
                     >
@@ -86,7 +86,7 @@ const Navbar = () => {
                     </Link>
                     <Link
                       to='/logout'
-                      className='text-white no-underline my-2 transition duration-200 ease-in-out'
+                      className='text-black no-underline my-2 transition duration-200 ease-in-out'
                       onClick={() => setIsOpen(false)}
                     >
                       <Button className='bg-white text-black'>
