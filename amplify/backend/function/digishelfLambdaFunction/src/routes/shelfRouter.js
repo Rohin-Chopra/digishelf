@@ -9,10 +9,12 @@ const {
   editShelf,
   deleteShelf,
   addMediaToShelf,
-  deleteMediaFromShelf
+  deleteMediaFromShelf,
+  getMyShelves
 } = require('./../controllers/shelf')
 
 router.route('/').get(getAllShelves).post(addShelf)
+router.route('/my-shelves').get(getMyShelves)
 
 router.route('/:id').get(getShelf).put(editShelf).delete(deleteShelf)
 

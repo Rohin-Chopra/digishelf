@@ -12,8 +12,8 @@ const sequelize = require('./config/db')
 
 const app = express()
 
-app.use(express.json({ limit: '50mb' }))
 app.use(cors())
+app.use(express.json({ limit: '50mb' }))
 app.use(morgan('tiny'))
 
 const shelfRouter = require('./routes/shelfRouter')
@@ -25,12 +25,7 @@ app.use(fileUpload())
 app.use((req, res, next) => {
   if (process.env.NODE_ENV === 'production') {
     const { event } = getCurrentInvoke()
-    if (
-      event.requestContext.authorizer &&
-      event.requestContext.authorizer.claims
-    ) {
-      req.username = event.requestContext.authorizer.claims.email
-    }
+    req.username = event.requestContext.authorizer.claims.email
   } else {
     req.username = 'test'
   }
@@ -38,8 +33,10 @@ app.use((req, res, next) => {
 })
 
 app.get('/', (req, res, next) => {
+  const { event } = getCurrentInvoke()
   res.status(200).json({
-    message: 'Welcome to DigiShelf API'
+    message: 'Welcome to DigiShelf API',
+    event
   })
 })
 

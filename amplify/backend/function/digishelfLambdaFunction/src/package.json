@@ -18,7 +18,7 @@
     "slugify": "^1.5.3"
   },
   "devDependencies": {
-    "aws-sdk": "^2.965.0"
+    "aws-sdk": "^2.967.0"
   },
   "scripts": {
     "start:local": "nodemon local.js",

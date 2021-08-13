@@ -58,6 +58,28 @@ exports.getAllShelves = asyncHandler(async (req, res, next) => {
     data: { shelves }
   })
 })
+exports.getMyShelves = asyncHandler(async (req, res, next) => {
+  // Gets all shelves of the authed user
+  const shelves = await Shelf.findAll({
+    where: {
+      createdBy: req.username
+    },
+    include: [
+      {
+        model: Media,
+        attributes: ['id', 'type'],
+        through: {
+          attributes: []
+        }
+      }
+    ]
+  })
+  res.status(200).json({
+    status: 'success',
+    results: shelves.length,
+    data: { shelves }
+  })
+})
 
 exports.addShelf = asyncHandler(async (req, res, next) => {
   const { nanoid } = require('nanoid')
