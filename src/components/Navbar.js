@@ -18,7 +18,7 @@ const Navbar = () => {
             to='/'
             className='text-white no-underline mr-4 transition duration-200 ease-in-out'
           >
-            <img src={logo} className='h-20' alt='Digishelf logo' />
+            <img src={logo} className='max-h-12' alt='Digishelf logo' />
           </Link>
           <FaBars
             className='block text-2xl absolute top-4 right-0 cursor-pointer text-white md:hidden'
