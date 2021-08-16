@@ -1,50 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { API } from 'aws-amplify'
 import BeatLoader from 'react-spinners/BeatLoader'
-import { FaPlusCircle } from 'react-icons/fa'
+import { IoIosAdd } from 'react-icons/io'
 import Button from '../components/Button'
 import { getCurrentUser } from '../utils/auth'
-
-const ShelfCard = ({ shelf, history }) => {
-  const [isMouseOver, setIsMouseOver] = useState(false)
-
-  return (
-    <div
-      className='w-80 mb-10 relative cursor-pointer'
-      onMouseEnter={() => {
-        setIsMouseOver(true)
-      }}
-      onMouseLeave={() => {
-        setIsMouseOver(false)
-      }}
-    >
-      <img
-        src={`https://rohin-bucket.s3.ap-southeast-2.amazonaws.com/${shelf.coverImg}`}
-        className='w-full h-full rounded shadow  opacity-90'
-        alt='lorem ipsum'
-      />
-      <span
-        className={`text-white font-bold absolute ${
-          isMouseOver ? 'bottom-20' : 'bottom-8'
-        } left-1/3`}
-      >
-        {shelf.name}
-      </span>
-      <Button
-        className={`${
-          isMouseOver ? 'opacity-100' : 'opacity-0'
-        } absolute bottom-8 left-1/3 bg-secondary text-white transition-all`}
-        onClick={() => history.push(`/shelves/${shelf.id}`)}
-      >
-        View
-      </Button>
-    </div>
-  )
-}
+import ShelfCard from '../components/ShelfCard'
+import emptyShelfImg from '../images/empty-shelf.png'
 
 const GetMyShelves = ({ history, match }) => {
   const [shelves, setShelves] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const isMounted = useRef(null)
 
   const makeRequest = async () => {
     const { token } = await getCurrentUser()
@@ -58,7 +24,10 @@ const GetMyShelves = ({ history, match }) => {
   }
 
   useEffect(() => {
-    makeRequest()
+    isMounted.current = true
+    if (isMounted.current) {
+      makeRequest()
+    }
   }, [])
 
   return (
@@ -70,10 +39,11 @@ const GetMyShelves = ({ history, match }) => {
           </div>
           <div>
             <Button
-              className='bg-green-500 text-white shadow mx-auto'
+              className='bg-green-500 rounded-full md:rounded text-center text-white shadow mx-auto fixed bottom-36 right-4 md:static z-50'
               onClick={() => history.push('/shelves/add')}
             >
-              Add Shelf <FaPlusCircle className='ml-1 inline text-xl' />
+              <span className='hidden md:inline'>Add media</span>
+              <IoIosAdd className='md:ml-1 inline text-2xl' />{' '}
             </Button>
           </div>
         </div>
@@ -88,6 +58,19 @@ const GetMyShelves = ({ history, match }) => {
                 <ShelfCard key={shelf.id} shelf={shelf} history={history} />
               )
             })}
+            {shelves.length === 0 && !isLoading ? (
+              <div className='mt-4 md:col-span-3 flex flex-col items-center'>
+                <img
+                  className='max-h-44 md:max-h-60'
+                  src={emptyShelfImg}
+                  alt='An empty shelf'
+                />
+                <p className='prose mt-4 md:mt-2 text-lg text-center'>
+                  Looks like it is empty here, add some shelves by clicking on
+                  add shelf button
+                </p>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
