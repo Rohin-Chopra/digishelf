@@ -1,11 +1,13 @@
 import React from 'react'
 import { NavLink as Link } from 'react-router-dom'
 
-const MyNavLink = ({ to, pathname, children, className }) => {
+const MyNavLink = ({ to, children, className, ...otherProps }) => {
   return (
     <Link
       to={to}
-      className={`no-underline transition duration-200 ease-in-out ${className}`}
+      activeClassName='opacity-100'
+      className={`no-underline transition duration-200 ease-in-out opacity-80 ${className}`}
+      {...otherProps}
     >
       {children}
     </Link>
