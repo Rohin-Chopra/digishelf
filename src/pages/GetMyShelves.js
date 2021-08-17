@@ -25,9 +25,7 @@ const GetMyShelves = ({ history, match }) => {
 
   useEffect(() => {
     isMounted.current = true
-    if (isMounted.current) {
-      makeRequest()
-    }
+    makeRequest()
   }, [])
 
   return (
@@ -42,7 +40,7 @@ const GetMyShelves = ({ history, match }) => {
               className='bg-green-500 rounded-full md:rounded text-center text-white shadow mx-auto fixed bottom-36 right-4 md:static z-50'
               onClick={() => history.push('/shelves/add')}
             >
-              <span className='hidden md:inline'>Add media</span>
+              <span className='hidden md:inline'>Add shelf</span>
               <IoIosAdd className='md:ml-1 inline text-2xl' />{' '}
             </Button>
           </div>
