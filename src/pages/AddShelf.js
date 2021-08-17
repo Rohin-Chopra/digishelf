@@ -146,7 +146,7 @@ const AddShelf = ({ history }) => {
                 name='visibility'
                 checked={inputs.visibility === 'public'}
                 onChange={handleChange}
-                class='mr-1 p-2 rounded-full'
+                className='mr-1 p-2 rounded-full'
               />
               Public
             </span>

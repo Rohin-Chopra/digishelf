@@ -17,8 +17,9 @@ import AddShelf from './pages/AddShelf'
 import GetMyShelves from './pages/GetMyShelves'
 import GetShelf from './pages/GetShelf'
 import AddMediaToShelf from './pages/AddMediaToShelf'
+import Discover from './pages/Discover'
 
-const history = createBrowserHistory()
+
 const App = () => {
   const [authContext, setAuthContext] = useState(null)
 
@@ -30,7 +31,7 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={[authContext, setAuthContext]}>
-      <Router history={history}>
+      <Router>
         <Navbar />
         <Switch>
           <Route path='/' exact component={Home} />
@@ -38,6 +39,7 @@ const App = () => {
           <Route path='/logout' component={Logout} />
           <Route path='/sign-up' component={SignUp} />
           <Route path='/verify' component={VerifyUser} />
+          <ProtectedRoute path='/discover' exact component={Discover} />
           <ProtectedRoute path='/shelves/add' exact component={AddShelf} />
           <ProtectedRoute path='/shelves' exact component={GetMyShelves} />
           <ProtectedRoute path='/shelves/:id' exact component={GetShelf} />

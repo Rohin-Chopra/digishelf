@@ -12,11 +12,11 @@ import { Link } from 'react-router-dom'
 const SlideItem = ({ moviePosterImgs, start = 0, end }) => {
   return (
     <div className='grid grid-cols-3 md:grid-cols-6'>
-      {moviePosterImgs.map((moviePosterImg, index) => {
-        if (index > start && index < end) {
-          return <img className='md:h-96' src={moviePosterImg} key={index} />
-        }
-      })}
+      {moviePosterImgs
+        .filter((_, index) => index > start && index < end)
+        .map((moviePosterImg, index) => (
+          <img className='md:h-96' src={moviePosterImg} key={index} />
+        ))}
     </div>
   )
 }
@@ -93,6 +93,7 @@ const HomeScreen = () => {
         <Carousel
           showArrows={false}
           showStatus={false}
+          showThumbs={false}
           showIndicators={false}
           autoPlay
           infiniteLoop
