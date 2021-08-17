@@ -1,11 +1,12 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { NavLink as Link } from 'react-router-dom'
 import { FaBars, FaTimes, FaSignOutAlt } from 'react-icons/fa'
 import logo from './../images/logo.png'
 import Button from './Button'
 import AuthContext from '../context/AuthContext'
+import NavLink from './NavLink'
 
-const Navbar = () => {
+const Navbar = (props) => {
   const [authContext] = useContext(AuthContext)
   const loggedIn = authContext !== null
   const [isOpen, setIsOpen] = useState(false)
@@ -29,34 +30,27 @@ const Navbar = () => {
           <div className='hidden md:flex md:items-center md:justify-center'>
             {loggedIn ? (
               <>
-                <Link
-                  to='/shelves'
-                  className='text-white no-underline mr-4 transition duration-200 ease-in-out'
-                >
+                <NavLink to='/discover' className='text-white mr-4'>
+                  Discover
+                </NavLink>
+                <NavLink to='/shelves' className='text-white mr-4'>
                   My Shelves
-                </Link>
-                <Link
-                  to='/logout'
-                  className='text-black no-underline mr-4 transition duration-200 ease-in-out'
-                >
+                </NavLink>
+                <NavLink to='/logout' className='text-black mr-4'>
                   <Button className='bg-white text-black'>
                     Logout <FaSignOutAlt className='inline-block' />
                   </Button>
-                </Link>
+                </NavLink>
               </>
             ) : (
               <>
                 {' '}
-                <Link
-                  to='/login'
-                  loggedIn
-                  className='text-white no-underline mr-4 transition duration-200 ease-in-out'
-                >
+                <NavLink to='/login' className='text-white mr-4'>
                   Login
-                </Link>
-                <Link to='sign-up'>
+                </NavLink>
+                <NavLink to='/sign-up' className='mr-4'>
                   <Button className='bg-secondary text-white'>Sign Up</Button>
-                </Link>
+                </NavLink>
               </>
             )}
           </div>
@@ -77,34 +71,33 @@ const Navbar = () => {
               <div className='grid grid-cols-1 grid-rows-6 text-center text-2xl'>
                 {loggedIn ? (
                   <>
-                    <Link
-                      to='/shelves '
-                      className='text-white no-underline my-2 transition duration-200 ease-in-out'
+                    <NavLink
+                      to='/shelves'
+                      className='text-white my-2'
                       onClick={() => setIsOpen(false)}
                     >
                       My Shelves
-                    </Link>
-                    <Link
+                    </NavLink>
+                    <NavLink
                       to='/logout'
-                      className='text-black no-underline my-2 transition duration-200 ease-in-out'
+                      className='text-black my-2'
                       onClick={() => setIsOpen(false)}
                     >
-                      <Button className='bg-white text-black'>
+                      <Button className='bg-white'>
                         Logout <FaSignOutAlt className='inline-block' />
                       </Button>
-                    </Link>
+                    </NavLink>
                   </>
                 ) : (
                   <>
                     {' '}
-                    <Link
-                      to='/login'
-                      loggedIn
-                      className='text-white no-underline my-2 transition duration-200 ease-in-out'
+                    <NavLink
+                      to='/shelves'
+                      className='text-white my-2'
                       onClick={() => setIsOpen(false)}
                     >
                       Login
-                    </Link>
+                    </NavLink>
                     <Link to='sign-up' onClick={() => setIsOpen(false)}>
                       <Button className='bg-secondary text-white'>
                         Sign Up
