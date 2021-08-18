@@ -74,117 +74,121 @@ const AddShelf = ({ history }) => {
   }
 
   return (
-    <div className='container py-4 px-4 mx-auto'>
-      <h1 className='prose prose-2xl font-bold text-center'>Create a shelf</h1>
-      <div
-        className={`${
-          message ? '' : 'hidden'
-        } bg-red-500 rounded shadow-lg mx-auto py-2 px-2 text-white mb-2`}
-        style={{ maxWidth: '30rem' }}
-      >
-        <FaRegTimesCircle className='inline font-bold text-2xl mr-2' />
-        {message}
-      </div>
-      <div
-        className='rounded shadow-lg py-6 px-4 mx-auto'
-        style={{ maxWidth: '30rem' }}
-      >
-        <form onSubmit={handleSubmit}>
-          {' '}
-          <div className='my-2'>
-            <label className='block'>Name</label>
-            <input
-              name='name'
-              type='text'
-              className={`form-input px-3 rounded w-full shadow ${
-                errors.name ? 'border-red-500' : ''
-              }`}
-              value={inputs.name}
-              onChange={handleChange}
-            />
-          </div>
-          <div className='my-2'>
-            <label className='block'>Description</label>
-            <textarea
-              name='description'
-              className={`form-input px-3 rounded w-full shadow ${
-                errors.description ? 'border-red-500' : ''
-              }`}
-              onChange={handleChange}
-            >
-              {inputs.description}
-            </textarea>
-          </div>
-          <div className='my-2'>
-            <label className='block'>Cover Image</label>
-            <input
-              type='file'
-              name='coverImg'
-              ref={fileInput}
-              onChange={handleFileChange}
-              className='hidden'
-            />
-            <Button
-              className='mt-2 bg-primary text-white'
-              onClick={handleClick}
-            >
-              {inputs.coverImg ? (
-                <span>
-                  Uploaded <FaCheckCircle className='inline' />
-                </span>
-              ) : (
-                'Upload'
-              )}
-            </Button>
-          </div>
-          <div className='my-3'>
-            <label className='block'>Visibility</label>
-            <span>
+    <main className='flex flex-col'>
+      <div className='container py-4 px-4 mx-auto'>
+        <h1 className='prose prose-2xl font-bold text-center'>
+          Create a shelf
+        </h1>
+        <div
+          className={`${
+            message ? '' : 'hidden'
+          } bg-red-500 rounded shadow-lg mx-auto py-2 px-2 text-white mb-2`}
+          style={{ maxWidth: '30rem' }}
+        >
+          <FaRegTimesCircle className='inline font-bold text-2xl mr-2' />
+          {message}
+        </div>
+        <div
+          className='rounded shadow-lg py-6 px-4 mx-auto'
+          style={{ maxWidth: '30rem' }}
+        >
+          <form onSubmit={handleSubmit}>
+            {' '}
+            <div className='my-2'>
+              <label className='block'>Name</label>
               <input
-                type='radio'
-                value='public'
-                name='visibility'
-                checked={inputs.visibility === 'public'}
+                name='name'
+                type='text'
+                className={`form-input px-3 rounded w-full shadow ${
+                  errors.name ? 'border-red-500' : ''
+                }`}
+                value={inputs.name}
                 onChange={handleChange}
-                className='mr-1 p-2 rounded-full'
               />
-              Public
-            </span>
-            <span className='ml-2'>
+            </div>
+            <div className='my-2'>
+              <label className='block'>Description</label>
+              <textarea
+                name='description'
+                className={`form-input px-3 rounded w-full shadow ${
+                  errors.description ? 'border-red-500' : ''
+                }`}
+                onChange={handleChange}
+              >
+                {inputs.description}
+              </textarea>
+            </div>
+            <div className='my-2'>
+              <label className='block'>Cover Image</label>
               <input
-                type='radio'
-                value='private'
-                name='visibility'
-                checked={inputs.visibility === 'private'}
-                onChange={handleChange}
-                class='mr-1 p-2 rounded-full text-pink-500'
+                type='file'
+                name='coverImg'
+                ref={fileInput}
+                onChange={handleFileChange}
+                className='hidden'
               />
-              Private
-            </span>
-          </div>
-          {isLoading ? (
-            <Button className='bg-green-500 text-white mt-2'>
-              {' '}
-              <ClipLoader
-                height={20}
-                width={20}
-                css={`
-                  height: 20px;
-                  width: 20px;
-                  color: white;
-                `}
+              <Button
+                className='mt-2 bg-primary text-white'
+                onClick={handleClick}
+              >
+                {inputs.coverImg ? (
+                  <span>
+                    Uploaded <FaCheckCircle className='inline' />
+                  </span>
+                ) : (
+                  'Upload'
+                )}
+              </Button>
+            </div>
+            <div className='my-3'>
+              <label className='block'>Visibility</label>
+              <span>
+                <input
+                  type='radio'
+                  value='public'
+                  name='visibility'
+                  checked={inputs.visibility === 'public'}
+                  onChange={handleChange}
+                  className='mr-1 p-2 rounded-full'
+                />
+                Public
+              </span>
+              <span className='ml-2'>
+                <input
+                  type='radio'
+                  value='private'
+                  name='visibility'
+                  checked={inputs.visibility === 'private'}
+                  onChange={handleChange}
+                  class='mr-1 p-2 rounded-full text-pink-500'
+                />
+                Private
+              </span>
+            </div>
+            {isLoading ? (
+              <Button className='bg-green-500 text-white mt-2'>
+                {' '}
+                <ClipLoader
+                  height={20}
+                  width={20}
+                  css={`
+                    height: 20px;
+                    width: 20px;
+                    color: white;
+                  `}
+                />
+              </Button>
+            ) : (
+              <input
+                type='submit'
+                className='inline-block text-center whitespace-nowrap align-middle py-2 px-2 border border-solid border-transparent rounded shadow cursor-pointer transition-colors	transition-shadow mt-2 bg-green-500 text-white'
+                value='Create'
               />
-            </Button>
-          ) : (
-            <input
-              type='submit'
-              className='inline-block text-center whitespace-nowrap align-middle py-2 px-2 border border-solid border-transparent rounded shadow cursor-pointer transition-colors	transition-shadow mt-2 bg-green-500 text-white'
-              value='Create'
-            />
-          )}
-        </form>
+            )}
+          </form>
+        </div>
       </div>
-    </div>
+    </main>
   )
 }
 
