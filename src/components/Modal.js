@@ -1,29 +1,8 @@
 import React, { Children } from 'react'
+import ClipLoader from 'react-spinners/ClipLoader'
 import Button from './Button'
 
-const Modal = ({ children, show, setShow }) => {
-  let _body, _title, _actionButton, _cancelButton
-
-  Children.forEach(children, (child) => {
-    console.log({ child })
-    if (child?.type?.name === 'ModalTitle') {
-      return (_title = child)
-    } else if (child?.type?.name === 'ModalBody') {
-      return (_body = child)
-    }
-    switch (child?.type?.name) {
-      case 'ModalTitle':
-        return (_title = child)
-      case 'ModalBody':
-        return (_body = child)
-      case 'ActionButton':
-        return (_actionButton = child)
-      case 'CancelButton':
-        return (_cancelButton = child)
-      default:
-        break
-    }
-  })
+const Modal = ({ show, setShow, title, body, handleSubmit, isLoading }) => {
   return show ? (
     <div
       class='fixed z-10 inset-0 overflow-y-auto'
@@ -65,51 +44,44 @@ const Modal = ({ children, show, setShow }) => {
                 </svg>
               </div>
               <div class='mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left'>
-                {_title}
-                <div class='mt-2'>{_body}</div>
+                <h3
+                  className='text-lg leading-6 font-medium text-gray-900'
+                  id='modal-title'
+                >
+                  {title}
+                </h3>{' '}
+                <div class='mt-2'>
+                  {' '}
+                  <p class='text-sm text-gray-500' id='modal-body'>
+                    {body}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
           <div class='bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse'>
-            {_actionButton}
-
-            {_cancelButton}
+            <Button
+              onClick={handleSubmit}
+              className='mt-3 w-full inline-flex justify-center rounded-md  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm bg-red-600 text-white focus:ring-red-500 hover:bg-red-700 disabled:opacity-50'
+              disabled={isLoading}
+            >
+              Delete
+              <ClipLoader
+                css='width:20px;height:20px; margin-left:5px;'
+                loading={isLoading}
+              />
+            </Button>
+            <Button
+              onClick={() => setShow(false)}
+              className='mt-3 w-full inline-flex justify-center rounded-md  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50'
+            >
+              Cancel
+            </Button>{' '}
           </div>
         </div>
       </div>
     </div>
   ) : null
 }
-const ModalTitle = ({ children }) => (
-  <h3 className='text-lg leading-6 font-medium text-gray-900' id='modal-title'>
-    {children}
-  </h3>
-)
-const ModalBody = ({ children }) => (
-  <p class='text-sm text-gray-500' id='modal-body'>
-    {children}
-  </p>
-)
-const ActionButton = ({ children, className, ...otherProps }) => (
-  <Button
-    {...otherProps}
-    className={`mt-3 w-full inline-flex justify-center rounded-md  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm ${className}`}
-  >
-    {children}
-  </Button>
-)
-//
-const CancelButton = ({ children, className, ...otherProps }) => (
-  <Button
-    {...otherProps}
-    className={`mt-3 w-full inline-flex justify-center rounded-md  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm ${className}`}
-  >
-    {children}
-  </Button>
-)
-Modal.Title = ModalTitle
-Modal.Body = ModalBody
-Modal.ActionButton = ActionButton
-Modal.CancelButton = CancelButton
 
 export default Modal

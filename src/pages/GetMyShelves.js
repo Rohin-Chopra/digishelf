@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { API } from 'aws-amplify'
-import ClipLoader from 'react-spinners/ClipLoader'
 import BeatLoader from 'react-spinners/BeatLoader'
 import { IoIosAdd } from 'react-icons/io'
 import { FaTrash, FaRegEdit, FaSave } from 'react-icons/fa'
@@ -116,30 +115,15 @@ const GetMyShelves = ({ history, match }) => {
                 </ShelfCard>
               )
             })}
-            <Modal show={showModal} setShow={setShowModal}>
-              <Modal.Title>Delete {shelfToBeDeleted?.name}</Modal.Title>
-              <Modal.Body>
-                {' '}
-                Do you want to delete {shelfToBeDeleted?.name}
-              </Modal.Body>
-              <Modal.CancelButton
-                className='border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50'
-                onClick={() => setShowModal(false)}
-              >
-                Cancel{' '}
-              </Modal.CancelButton>
-              <Modal.ActionButton
-                className='bg-red-600 text-white focus:ring-red-500 hover:bg-red-700 disabled:opacity-50'
-                onClick={handleDeleteShelf}
-                disabled={isModalLoading}
-              >
-                Delete{' '}
-                <ClipLoader
-                  css='width:20px;height:20px; margin-left:5px;'
-                  loading={isModalLoading}
-                />
-              </Modal.ActionButton>
-            </Modal>
+            <Modal
+              show={showModal}
+              setShow={setShowModal}
+              title={`Delete ${shelfToBeDeleted?.name}`}
+              body={`Do you want to delete ${shelfToBeDeleted?.name}`}
+              isLoading={isModalLoading}
+              handleSubmit={handleDeleteShelf}
+            />
+
             {shelves.length === 0 && !isLoading ? (
               <div className='mt-4 md:col-span-3 flex flex-col items-center'>
                 <img
