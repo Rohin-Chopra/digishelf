@@ -13,7 +13,8 @@ module.exports = {
       gray: colors.coolGray,
       transparent: 'transparent',
       red: colors.red,
-      green: colors.green
+      green: colors.green,
+      yellow: colors.amber
     },
     extend: {
       typography: {

@@ -5,6 +5,7 @@ const Modal = ({ children, show, setShow }) => {
   let _body, _title, _actionButton, _cancelButton
 
   Children.forEach(children, (child) => {
+    console.log({ child })
     if (child?.type?.name === 'ModalTitle') {
       return (_title = child)
     } else if (child?.type?.name === 'ModalBody') {

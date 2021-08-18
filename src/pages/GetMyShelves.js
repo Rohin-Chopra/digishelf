@@ -40,6 +40,7 @@ const GetMyShelves = ({ history, match }) => {
   }
 
   const handleDeleteButton = (shelf) => {
+    console.log('hola', { shelf })
     setShelfToBeDeleted(shelf)
     setShowModal(true)
   }
@@ -71,18 +72,18 @@ const GetMyShelves = ({ history, match }) => {
           </div>
           <div>
             <Button
-              className='bg-yellow-500 rounded-full md:rounded text-center text-white shadow mx-auto fixed bottom-36 right-4 md:static z-50 mr-2'
+              className='bg-yellow-500 rounded text-center text-white shadow mx-auto mr-2'
               onClick={handleEditButton}
             >
               {isEditMode ? (
                 <>
-                  <span>Save</span>
-                  <FaSave className='md:ml-2 inline text-xl' />
+                  <span className='align-middle'>Save</span>
+                  <FaSave className='ml-2 inline text-xl' />
                 </>
               ) : (
                 <>
-                  <span className='hidden md:inline'>Edit</span>
-                  <FaRegEdit className='md:ml-2 inline text-xl' />
+                  <span className='align-middle'>Edit</span>
+                  <FaRegEdit className='ml-2 inline text-xl' />
                 </>
               )}
             </Button>
