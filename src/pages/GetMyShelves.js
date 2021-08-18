@@ -1,18 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { API } from 'aws-amplify'
+import ClipLoader from 'react-spinners/ClipLoader'
 import BeatLoader from 'react-spinners/BeatLoader'
 import { IoIosAdd } from 'react-icons/io'
+import { FaTrash, FaRegEdit, FaSave } from 'react-icons/fa'
 import Button from '../components/Button'
 import { getCurrentUser } from '../utils/auth'
 import ShelfCard from '../components/ShelfCard'
 import emptyShelfImg from '../images/empty-shelf.png'
+import Modal from './../components/Modal'
 
 const GetMyShelves = ({ history, match }) => {
   const [shelves, setShelves] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [shelfToBeDeleted, setShelfToBeDeleted] = useState(null)
+  const [showModal, setShowModal] = useState(false)
+  const [isModalLoading, setIsModalLoading] = useState(false)
   const isMounted = useRef(null)
 
-  const makeRequest = async () => {
+  const fetchMyShelves = async () => {
     const { token } = await getCurrentUser()
     const { data } = await API.get('digishelfApi', '/shelves/my-shelves', {
       headers: {
@@ -25,8 +32,35 @@ const GetMyShelves = ({ history, match }) => {
 
   useEffect(() => {
     isMounted.current = true
-    makeRequest()
+    fetchMyShelves()
   }, [])
+
+  const handleEditButton = () => {
+    setIsEditMode(!isEditMode)
+  }
+
+  const handleDeleteButton = (shelf) => {
+    setShelfToBeDeleted(shelf)
+    setShowModal(true)
+  }
+  const handleDeleteShelf = async () => {
+    if (shelfToBeDeleted != null) {
+      const { token } = await getCurrentUser()
+      setIsModalLoading(true)
+      try {
+        await API.del('digishelfApi', `/shelves/${shelfToBeDeleted.id}`, {
+          headers: {
+            Authorization: token
+          }
+        })
+        setIsModalLoading(false)
+        setShowModal(false)
+        fetchMyShelves()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
 
   return (
     <main className='flex flex-col'>
@@ -36,6 +70,22 @@ const GetMyShelves = ({ history, match }) => {
             <h1 className='font-bold text-2xl'>Your Shelves</h1>
           </div>
           <div>
+            <Button
+              className='bg-yellow-500 rounded-full md:rounded text-center text-white shadow mx-auto fixed bottom-36 right-4 md:static z-50 mr-2'
+              onClick={handleEditButton}
+            >
+              {isEditMode ? (
+                <>
+                  <span>Save</span>
+                  <FaSave className='md:ml-2 inline text-xl' />
+                </>
+              ) : (
+                <>
+                  <span className='hidden md:inline'>Edit</span>
+                  <FaRegEdit className='md:ml-2 inline text-xl' />
+                </>
+              )}
+            </Button>
             <Button
               className='bg-green-500 rounded-full md:rounded text-center text-white shadow mx-auto fixed bottom-36 right-4 md:static z-50'
               onClick={() => history.push('/shelves/add')}
@@ -53,9 +103,42 @@ const GetMyShelves = ({ history, match }) => {
             />
             {shelves.map((shelf) => {
               return (
-                <ShelfCard key={shelf.id} shelf={shelf} history={history} />
+                <ShelfCard key={shelf.id} shelf={shelf} history={history}>
+                  {isEditMode ? (
+                    <div
+                      className='cursor-pointer rounded-full bg-red-500 text-white w-8 h-8 text-center flex items-center justify-center absolute -top-3 -right-3 hover:shadow-lg hover:bg-red-700'
+                      onClick={() => handleDeleteButton(shelf)}
+                    >
+                      <FaTrash className='inline text-lg' />
+                    </div>
+                  ) : null}
+                </ShelfCard>
               )
             })}
+            <Modal show={showModal} setShow={setShowModal}>
+              <Modal.Title>Delete {shelfToBeDeleted?.name}</Modal.Title>
+              <Modal.Body>
+                {' '}
+                Do you want to delete {shelfToBeDeleted?.name}
+              </Modal.Body>
+              <Modal.CancelButton
+                className='border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50'
+                onClick={() => setShowModal(false)}
+              >
+                Cancel{' '}
+              </Modal.CancelButton>
+              <Modal.ActionButton
+                className='bg-red-600 text-white focus:ring-red-500 hover:bg-red-700 disabled:opacity-50'
+                onClick={handleDeleteShelf}
+                disabled={isModalLoading}
+              >
+                Delete{' '}
+                <ClipLoader
+                  css='width:20px;height:20px; margin-left:5px;'
+                  loading={isModalLoading}
+                />
+              </Modal.ActionButton>
+            </Modal>
             {shelves.length === 0 && !isLoading ? (
               <div className='mt-4 md:col-span-3 flex flex-col items-center'>
                 <img

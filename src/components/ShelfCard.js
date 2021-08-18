@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import Button from '../components/Button'
 
-const ShelfCard = ({ shelf, history }) => {
+const ShelfCard = ({ shelf, history, children }) => {
   const [isMouseOver, setIsMouseOver] = useState(false)
 
   return (
@@ -35,6 +35,7 @@ const ShelfCard = ({ shelf, history }) => {
       >
         View
       </Button>
+      {children}
     </div>
   )
 }
