@@ -1,10 +1,10 @@
 import React from 'react'
 
-const FormInput = ({ isError, ...otherProps }) => {
+const FormInput = ({ isError, className, ...otherProps }) => {
   return (
     <input
-      className={`form-input px-3 rounded w-full shadow ${isError ? 'border-red-500' : ''
-        }`}
+      className={`form-input  rounded w-full shadow border border-gray-500 px-2 py-1 ${isError ? 'border-red-500' : ''
+        } ${className}`}
       {...otherProps}
     />
   )
