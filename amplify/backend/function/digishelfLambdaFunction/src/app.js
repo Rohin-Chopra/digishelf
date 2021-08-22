@@ -5,10 +5,10 @@ const { getCurrentInvoke } = require('@vendia/serverless-express')
 const morgan = require('morgan')
 
 const sequelize = require('./config/db')
-;(async () => {
-  await sequelize.sync({ force: false })
-  console.log('Connected to the database')
-})()
+  ; (async () => {
+    await sequelize.sync({ force: false })
+    console.log('Connected to the database')
+  })()
 
 const app = express()
 
@@ -27,7 +27,7 @@ app.use((req, res, next) => {
     const { event } = getCurrentInvoke()
     req.username = event.requestContext.authorizer.claims.email
   } else {
-    req.username = 'test'
+    req.username = process.env.LOCAL_USERNAME || 'test'
   }
   next()
 })
