@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import movieDb from '../api/movieDb'
 
-const MediaCard = ({ media }) => {
+const MediaCard = ({ children, media }) => {
   const [imgUrl, setImgUrl] = useState('')
   const [mediaHomePage, setMediaHomePage] = useState('')
   const fetchMedia = async () => {
@@ -16,15 +16,19 @@ const MediaCard = ({ media }) => {
   }, [])
 
   return (
-    <a href={mediaHomePage} target='_blank' rel='noopener noreferrer'>
-      <div>
-        <img
-          className='max-h-96 rounded shadow-lg mt-2'
-          alt='random'
-          src={`https://image.tmdb.org/t/p/w500//${imgUrl}`}
-        />
-      </div>
-    </a>
+    <div className='relative'>
+      {children}
+
+      <a href={mediaHomePage} target='_blank' rel='noopener noreferrer'>
+        <div>
+          <img
+            className='max-h-96 rounded shadow-lg mt-2'
+            alt='random'
+            src={`https://image.tmdb.org/t/p/w500//${imgUrl}`}
+          />
+        </div>
+      </a>
+    </div>
   )
 }
 
