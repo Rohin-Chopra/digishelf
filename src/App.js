@@ -28,13 +28,14 @@ const App = () => {
       setAuthContext(res)
     })
   }, [])
+  console.log('hola')
 
   return (
     <AuthContext.Provider value={[authContext, setAuthContext]}>
       <Router>
         <Navbar />
         <Switch>
-          <Route path='/' exact component={Home} />
+          <ProtectedRoute path='/' exact component={GetMyShelves} redirectUnauthorizedTo={Home} />
           <Route path='/login' component={Login} />
           <Route path='/logout' component={Logout} />
           <Route path='/sign-up' component={SignUp} />
