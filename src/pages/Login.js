@@ -8,6 +8,8 @@ import GoogleIcon from './../images/google-icon.svg'
 import bookshelfImg from './../images/bookshelf-with-person.png'
 import { Auth } from 'aws-amplify'
 import { Link } from 'react-router-dom'
+import FormLabel from '../components/FormLabel'
+import FormInput from '../components/FormInput'
 
 const Login = ({ history }) => {
   const [email, setEmail] = useState('')
@@ -57,33 +59,29 @@ const Login = ({ history }) => {
             <small className='text-red-500 prose'>{error}</small>
             <form onSubmit={handleSubmit}>
               <div className='my-2'>
-                <label for='firstName' className='mb-1 block text-gray-500'>
+                <FormLabel for='firstName'>
                   Email
-                </label>
-                <input
+                </FormLabel>
+                <FormInput
                   type='text'
                   name='email'
                   value={email}
                   onChange={({ target }) => setEmail(target.value)}
                   id='email'
-                  className={`form-input px-3 rounded w-full shadow ${
-                    error ? 'border-red-500' : ''
-                  }`}
+                  isError={error}
                 />
               </div>
               <div className='my-2'>
-                <label for='firstName' className='mb-1 block text-gray-500'>
+                <FormLabel for='firstName'>
                   Password
-                </label>
-                <input
+                </FormLabel>
+                <FormInput
                   type='password'
                   name='password'
                   value={password}
                   onChange={({ target }) => setPassword(target.value)}
                   id='password'
-                  className={`form-input px-3 rounded w-full shadow ${
-                    error ? 'border-red-500' : ''
-                  }`}
+                  isError={error}
                 />
               </div>
               <Button
