@@ -72,7 +72,7 @@ const Navbar = (props) => {
                 {loggedIn ? (
                   <>
                     <NavLink
-                      to='/shelves'
+                      to='/'
                       className='text-white my-2'
                       onClick={() => setIsOpen(false)}
                     >

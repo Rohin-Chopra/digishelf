@@ -65,7 +65,7 @@ const AddShelf = ({ history }) => {
             visibility: inputs.visibility
           }
         })
-        history.push('/shelves')
+        history.push('/')
       } catch (error) {
         console.log(error)
         setMessage(error.response.data.message)

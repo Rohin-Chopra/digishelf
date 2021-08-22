@@ -151,7 +151,7 @@ const SignUp = ({ history }) => {
                   value={inputs.name}
                   onChange={handleChange}
                   id='name'
-                  isError={inputs.name}
+                  isError={errors.name}
                 />
                 <small
                   className={`text-red-500 ${errors.name ? '' : 'hidden'}`}
@@ -171,7 +171,7 @@ const SignUp = ({ history }) => {
                   value={inputs.email}
                   onChange={handleChange}
                   id='email'
-                  isError={inputs.email}
+                  isError={errors.email}
                 />
                 <small
                   className={`text-red-500 ${errors.email ? '' : 'hidden'}`}
@@ -192,7 +192,7 @@ const SignUp = ({ history }) => {
                   id='password'
                   value={inputs.password}
                   onChange={handleChange}
-                  isError={inputs.password}
+                  isError={errors.password}
                 />
                 <small
                   className={`text-red-500 ${errors.password ? '' : 'hidden'}`}
@@ -210,7 +210,7 @@ const SignUp = ({ history }) => {
                   id='cPassword'
                   value={inputs.cPassword}
                   onChange={handleChange}
-                  isError={inputs.cPassword}
+                  isError={errors.cPassword}
                 />
                 <small
                   className={`text-red-500 ${errors.cPassword ? '' : 'hidden'}`}

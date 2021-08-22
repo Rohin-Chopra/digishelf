@@ -39,7 +39,6 @@ const GetMyShelves = ({ history, match }) => {
   }
 
   const handleDeleteButton = (shelf) => {
-    console.log('hola', { shelf })
     setShelfToBeDeleted(shelf)
     setShowModal(true)
   }
@@ -88,7 +87,7 @@ const GetMyShelves = ({ history, match }) => {
             </Button>
             <Button
               className='bg-green-500 rounded-full md:rounded text-center text-white shadow mx-auto fixed bottom-36 right-4 md:static z-50'
-              onClick={() => history.push('/shelves/add')}
+              onClick={() => history.push('/add')}
             >
               <span className='hidden md:inline'>Add shelf</span>
               <IoIosAdd className='md:ml-1 inline text-2xl' />{' '}

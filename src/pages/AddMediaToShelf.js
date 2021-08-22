@@ -22,8 +22,7 @@ const AddMediaToShelf = ({ history, match }) => {
 
   const fetchShelf = async () => {
     const { token, user } = await getCurrentUser()
-    console.log({ user })
-    const { data } = await axios.get(
+    const { data: { shelf } } = await axios.get(
       `https://sdhr3phfz1.execute-api.ap-southeast-2.amazonaws.com/dev/shelves/${match.params.id}`,
       {
         headers: {
@@ -31,7 +30,7 @@ const AddMediaToShelf = ({ history, match }) => {
         }
       }
     )
-    setShelf(data.shelf)
+    setShelf(shelf)
   }
 
   useEffect(() => {
@@ -77,10 +76,6 @@ const AddMediaToShelf = ({ history, match }) => {
       return setError('Select name of the media')
     }
     setError('')
-    console.log({
-      mediaId,
-      category
-    })
     const { token } = await getCurrentUser()
     try {
       await API.post('digishelfApi', `/shelves/${match.params.id}/media`, {
@@ -93,7 +88,7 @@ const AddMediaToShelf = ({ history, match }) => {
         }
       })
 
-      history.push(`/shelves/${match.params.id}`)
+      history.push(`/${match.params.id}`)
     } catch (error) {
       console.log(error.response)
     }
@@ -109,7 +104,7 @@ const AddMediaToShelf = ({ history, match }) => {
           <FormLabel>Category</FormLabel>
           <Select
             className='mt-2'
-             defaultValue={categoryOptions[0]}
+            defaultValue={categoryOptions[0]}
             name='category'
             options={categoryOptions}
             isSearchable={false}

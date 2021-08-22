@@ -41,11 +41,10 @@ const App = () => {
           <Route path='/sign-up' component={SignUp} />
           <Route path='/verify' component={VerifyUser} />
           <ProtectedRoute path='/discover' exact component={Discover} />
-          <ProtectedRoute path='/shelves/add' exact component={AddShelf} />
-          <ProtectedRoute path='/shelves' exact component={GetMyShelves} />
-          <ProtectedRoute path='/shelves/:id' exact component={GetShelf} />
+          <ProtectedRoute path='/add' exact component={AddShelf} />
+          <ProtectedRoute path='/:id' exact component={GetShelf} />
           <ProtectedRoute
-            path='/shelves/:id/media/add'
+            path='/:id/media/add'
             exact
             component={AddMediaToShelf}
           />
