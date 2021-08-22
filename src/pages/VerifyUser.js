@@ -6,8 +6,7 @@ import ClipLoader from 'react-spinners/ClipLoader'
 import AuthContext from '../context/AuthContext'
 import { verifyUser } from '../utils/auth'
 
-const VerifyUser = (props) => {
-  const [redirectToHome, setRedirectToHome] = useState(false)
+const VerifyUser = ({ history }) => {
   const [vCode, setVCode] = useState('')
   const [username, setUsername] = useState('')
   const [snackbar, setSnackbar] = useState({
@@ -17,14 +16,12 @@ const VerifyUser = (props) => {
   })
   const [authContext] = useContext(AuthContext)
 
-  // const { username: email } = authContext.user
   const [isLoading, setIsLoading] = useState(false)
-  const [redirectToLogin, setRedirectToLogin] = useState(false)
 
   useEffect(() => {
     setUsername(authContext?.user?.username)
     if (authContext?.user?.attributes?.email_verified) {
-      setRedirectToHome(true)
+      history.push('/')
     }
   }, [authContext])
 
@@ -44,7 +41,7 @@ const VerifyUser = (props) => {
         message: 'Correct verification code'
       })
       setIsLoading(false)
-      setRedirectToLogin(true)
+      history.push('/login')
     } else {
       setSnackbar({
         show: true,
@@ -58,8 +55,6 @@ const VerifyUser = (props) => {
   return (
     <main>
       <div className='container mx-auto px-2 py-6 flex flex-col justify-center items-center'>
-        {redirectToLogin ? <Redirect to='/login' /> : null}
-        {redirectToHome ? <Redirect to='/' /> : null}
         <div className=' max-w-lg'>
           <h1 className='prose prose-2xl font-bold'>Verify your email</h1>
           <div className='bg-green-300 py-2 px-4 rounded shadow text-green-800'>
