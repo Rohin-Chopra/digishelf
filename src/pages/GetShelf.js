@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import { API } from 'aws-amplify'
 import BeatLoader from 'react-spinners/BeatLoader'
+import { FaTrash, FaRegEdit, FaSave } from 'react-icons/fa'
 import { IoIosAdd } from 'react-icons/io'
 import { BiShareAlt } from 'react-icons/bi'
 import Button from '../components/Button'
 import { getCurrentUser } from '../utils/auth'
 import emptyShelfImg from '../images/empty-shelf.png'
 import MediaCard from '../components/MediaCard'
+import FormInput from '../components/FormInput'
+
 const GetShelf = ({ history, match }) => {
   const [shelf, setShelf] = useState(null)
   const [userName, setUserName] = useState('')
   const [isLoading, setIsLoading] = useState(true)
-
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [isUsersOwnShelf, setIsUsersOwnShelf] = useState(false)
+  const [inputs, setInputs] = useState({})
   const fetchShelf = async () => {
     const { user, token } = await getCurrentUser()
     const { shelf } = await API.get(
@@ -24,43 +29,128 @@ const GetShelf = ({ history, match }) => {
       }
     )
     setUserName(user.attributes.name)
+    setIsUsersOwnShelf(user.attributes.email === shelf.createdBy)
     setIsLoading(false)
     setShelf(shelf)
+    setInputs(shelf)
   }
 
   useEffect(() => {
+    setIsUsersOwnShelf(false)
     fetchShelf()
   }, [])
-
+  const handleEditButton = async () => {
+    if (isEditMode) {
+      const { token } = await getCurrentUser()
+      await API.put(
+        'digishelfApi',
+        `/shelves/${match.params.id}`,
+        {
+          body: inputs,
+          headers: {
+            Authorization: token
+          }
+        }
+      )
+      fetchShelf()
+    }
+    setIsEditMode(!isEditMode)
+  }
+  const handleDeleteButton = async (mediaId) => {
+    if (mediaId) {
+      try {
+        const { token } = await getCurrentUser()
+        await API.del('digishelfApi', `/shelves/${match.params.id}/media/${mediaId}`, {
+          headers: {
+            Authorization: token
+          }
+        })
+        fetchShelf()
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  }
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setInputs({
+      ...inputs,
+      [name]: value
+    })
+  }
   return (
     <main className='flex flex-col'>
       <div className='container px-6 py-4 mx-auto'>
         <div className='flex flex-col justify-center md:flex-row md:justify-between'>
           <div>
             <h1 className='prose text-xl font-bold'>
-              {userName}'s {shelf?.name}
+              {userName}'s {isEditMode
+                ?
+                <FormInput
+                  className='inline border rounded w-auto'
+                  style={{ display: 'inline', width: 'auto' }}
+                  name='name' value={inputs.name}
+                  onChange={handleChange}
+                />
+                : shelf?.name
+              }
             </h1>
-            <p className='prose font-light'>{shelf?.description}</p>
+            {isEditMode
+              ?
+              <FormInput className='inline border rounded w-auto my-2' style={{ display: 'inline', width: 'auto' }} name='description' value={inputs.description} onChange={handleChange} />
+              :
+              <p className='prose font-light'>{shelf?.description}</p>
+            }
+
           </div>
           <div>
+            {isUsersOwnShelf && <Button
+              className='bg-yellow-500 rounded-full md:rounded text-center text-white shadow mx-auto fixed bottom-36 right-4 md:static z-50 mr-2'
+              onClick={handleEditButton}
+            >
+              {isEditMode ? (
+                <>
+                  <span>Save</span>
+                  <FaSave className='md:ml-2 inline text-xl' />
+                </>
+              ) : (
+                <>
+                  <span className='hidden md:inline'>Edit</span>
+                  <FaRegEdit className='md:ml-2 inline text-xl' />
+                </>
+              )}
+            </Button>
+            }
             <Button className='bg-secondary mr-2 text-white'>
               Share <BiShareAlt className='ml-1 inline text-xl' />
             </Button>
-            <Button
+            {isUsersOwnShelf && <Button
               className='bg-green-500 rounded-full md:rounded text-center text-white shadow mx-auto fixed bottom-36 right-4 md:static z-50'
               onClick={() =>
-                history.push(`/shelves/${match.params.id}/media/add`)
+                history.push(`/${match.params.id}/media/add`)
               }
             >
               <span className='hidden md:inline'>Add media</span>
               <IoIosAdd className='md:ml-1 inline text-2xl' />
             </Button>
+            }
           </div>
         </div>
         <div className='mt-2 grid md:grid-cols-4 gap-4 justify-items-center'>
           <BeatLoader css='grid-column: span 4 / span 4;' loading={isLoading} />
           {shelf?.Media.map((media) => {
-            return <MediaCard key={media.id} media={media} />
+            return (
+              <MediaCard key={media.id} media={media}>
+                {isEditMode ? (
+                  <div
+                    className='cursor-pointer rounded-full bg-red-500 text-white w-8 h-8 text-center flex items-center justify-center absolute -top-2 -right-3 hover:shadow-lg hover:bg-red-700'
+                    onClick={() => handleDeleteButton(media.id)}
+                  >
+                    <FaTrash className='inline text-lg' />
+                  </div>
+                ) : null}
+              </MediaCard>
+            )
           })}
           {shelf?.Media?.length === 0 && !isLoading ? (
             <div className='mt-4 md:col-span-4 flex flex-col items-center'>
