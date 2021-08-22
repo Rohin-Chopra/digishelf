@@ -6,6 +6,7 @@ import Button from '../components/Button'
 import movieDb from '../api/movieDb'
 import { getCurrentUser } from '../utils/auth'
 import { API } from 'aws-amplify'
+import FormLabel from '../components/FormLabel'
 
 const AddMediaToShelf = ({ history, match }) => {
   const [shelf, setShelf] = useState(null)
@@ -105,10 +106,10 @@ const AddMediaToShelf = ({ history, match }) => {
       </h1>
       <div className='py-4 px-6 shadow-lg rounded w-full md:w-96'>
         <div className='mb-2'>
-          <label>Category</label>
+          <FormLabel>Category</FormLabel>
           <Select
             className='mt-2'
-            defaultValue={categoryOptions[0]}
+             defaultValue={categoryOptions[0]}
             name='category'
             options={categoryOptions}
             isSearchable={false}
@@ -125,7 +126,7 @@ const AddMediaToShelf = ({ history, match }) => {
         </div>
 
         <div className='my-3'>
-          <label className='mb-4'>Name</label>
+          <FormLabel>Name</FormLabel>
           <AsyncSelect
             className='my-2'
             cacheOptions

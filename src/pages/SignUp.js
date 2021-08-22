@@ -11,6 +11,8 @@ import { signUp } from '../utils/auth'
 import GoogleIcon from './../images/google-icon.svg'
 import bookshelfImg from './../images/bookshelf-with-person.png'
 import { Auth } from 'aws-amplify'
+import FormLabel from '../components/FormLabel'
+import FormInput from '../components/FormInput'
 
 const SignUp = ({ history }) => {
   const [inputs, setInputs] = useState({
@@ -140,40 +142,36 @@ const SignUp = ({ history }) => {
           >
             <div className='md:grid md:grid-cols-1 gap-4'>
               <div className='mb-4'>
-                <label for='name' className='mb-1 block text-gray-500'>
+                <FormLabel for='name'>
                   Name
-                </label>
-                <input
+                </FormLabel>
+                <FormInput
                   type='text'
                   name='name'
                   value={inputs.name}
                   onChange={handleChange}
                   id='name'
-                  className={`form-input px-3 rounded w-full shadow ${
-                    errors.name ? 'border-red-500' : ''
-                  }`}
+                  isError={inputs.name}
                 />
                 <small
                   className={`text-red-500 ${errors.name ? '' : 'hidden'}`}
                 >
-                  Last Name cannot be empty
+                  Name cannot be empty
                 </small>
               </div>
             </div>
             <div className='md:grid md:grid-cols-1'>
               <div className='mb-4'>
-                <label for='email' className='mb-1 block text-gray-500'>
+                <FormLabel for='email'>
                   Email
-                </label>
-                <input
+                </FormLabel>
+                <FormInput
                   type='email'
                   name='email'
                   value={inputs.email}
                   onChange={handleChange}
                   id='email'
-                  className={`form-input px-3 rounded w-full shadow ${
-                    errors.email ? 'border-red-500' : ''
-                  }`}
+                  isError={inputs.email}
                 />
                 <small
                   className={`text-red-500 ${errors.email ? '' : 'hidden'}`}
@@ -185,18 +183,16 @@ const SignUp = ({ history }) => {
 
             <div className='md:grid md:grid-cols-2 gap-4'>
               <div className='mb-4'>
-                <label for='password' className='mb-1 block text-gray-500'>
+                <FormLabel for='password'>
                   Password
-                </label>
-                <input
+                </FormLabel>
+                <FormInput
                   type='password'
                   name='password'
                   id='password'
                   value={inputs.password}
                   onChange={handleChange}
-                  className={`form-input px-3 rounded w-full shadow ${
-                    errors.password ? 'border-red-500' : ''
-                  }`}
+                  isError={inputs.password}
                 />
                 <small
                   className={`text-red-500 ${errors.password ? '' : 'hidden'}`}
@@ -205,18 +201,16 @@ const SignUp = ({ history }) => {
                 </small>
               </div>
               <div className='mb-4'>
-                <label for='cPassword' className='mb-1 block text-gray-500'>
+                <FormLabel for='cPassword'>
                   Confirm password
-                </label>
-                <input
+                </FormLabel>
+                <FormInput
                   type='password'
                   name='cPassword'
                   id='cPassword'
                   value={inputs.cPassword}
                   onChange={handleChange}
-                  className={`form-input px-3 rounded w-full shadow ${
-                    errors.cPassword ? 'border-red-500' : ''
-                  }`}
+                  isError={inputs.cPassword}
                 />
                 <small
                   className={`text-red-500 ${errors.cPassword ? '' : 'hidden'}`}

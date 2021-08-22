@@ -5,6 +5,8 @@ import Button from '../components/Button'
 import { getCurrentUser } from '../utils/auth'
 import getBase64Image from '../utils/getBase64Image'
 import ClipLoader from 'react-spinners/ClipLoader'
+import FormLabel from '../components/FormLabel'
+import FormInput from '../components/FormInput'
 
 const AddShelf = ({ history }) => {
   const [inputs, setInputs] = useState({
@@ -95,19 +97,17 @@ const AddShelf = ({ history }) => {
           <form onSubmit={handleSubmit}>
             {' '}
             <div className='my-2'>
-              <label className='block'>Name</label>
-              <input
+              <FormLabel>Name</FormLabel>
+              <FormInput
                 name='name'
                 type='text'
-                className={`form-input px-3 rounded w-full shadow ${
-                  errors.name ? 'border-red-500' : ''
-                }`}
-                value={inputs.name}
                 onChange={handleChange}
+                value={inputs.name}
+                isError={inputs.name}
               />
             </div>
             <div className='my-2'>
-              <label className='block'>Description</label>
+              <FormLabel>Description</FormLabel>
               <textarea
                 name='description'
                 className={`form-input px-3 rounded w-full shadow ${
@@ -119,7 +119,7 @@ const AddShelf = ({ history }) => {
               </textarea>
             </div>
             <div className='my-2'>
-              <label className='block'>Cover Image</label>
+              <FormLabel>Cover Image</FormLabel>
               <input
                 type='file'
                 name='coverImg'
@@ -141,7 +141,7 @@ const AddShelf = ({ history }) => {
               </Button>
             </div>
             <div className='my-3'>
-              <label className='block'>Visibility</label>
+              <FormLabel>Visibility</FormLabel>
               <span>
                 <input
                   type='radio'
