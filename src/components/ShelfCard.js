@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { isMobile } from 'react-device-detect'
 import Button from '../components/Button'
 
 const ShelfCard = ({ shelf, history, children }) => {
