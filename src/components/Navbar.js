@@ -33,7 +33,7 @@ const Navbar = (props) => {
                 <NavLink to='/discover' className='text-white mr-4'>
                   Discover
                 </NavLink>
-                <NavLink to='/shelves' className='text-white mr-4'>
+                <NavLink to='/' className='text-white mr-4'>
                   My Shelves
                 </NavLink>
                 <NavLink to='/logout' className='text-black mr-4'>
@@ -55,9 +55,8 @@ const Navbar = (props) => {
             )}
           </div>
           <div
-            className={`transition-all fixed z-50 w-full h-full ${
-              isOpen ? 'flex' : 'hidden'
-            } items-center justify-center top-0 left-0 delay-300 ease-in-out
+            className={`transition-all fixed z-50 w-full h-full ${isOpen ? 'flex' : 'hidden'
+              } items-center justify-center top-0 left-0 delay-300 ease-in-out
             }`}
             style={{ background: '#0d0d0d' }}
           >
@@ -71,6 +70,13 @@ const Navbar = (props) => {
               <div className='grid grid-cols-1 grid-rows-6 text-center text-2xl'>
                 {loggedIn ? (
                   <>
+                    <NavLink
+                      to='/discover'
+                      className='text-white my-2'
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Discover
+                    </NavLink>
                     <NavLink
                       to='/'
                       className='text-white my-2'
