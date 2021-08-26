@@ -10,13 +10,14 @@ import Login from './pages/Login'
 import Logout from './pages/Logout'
 import SignUp from './pages/SignUp'
 import VerifyUser from './pages/VerifyUser'
-import 'react-responsive-carousel/lib/styles/carousel.min.css'
-import './App.css'
 import AddShelf from './pages/AddShelf'
 import GetMyShelves from './pages/GetMyShelves'
 import GetShelf from './pages/GetShelf'
 import AddMediaToShelf from './pages/AddMediaToShelf'
 import Discover from './pages/Discover'
+import 'react-responsive-carousel/lib/styles/carousel.min.css'
+import './App.css'
+
 
 
 const App = () => {
