@@ -40,7 +40,7 @@ exports.getAllShelves = asyncHandler(async (req, res, next) => {
   // Gets all public shelves and private shelf of the authed user
   const shelves = await Shelf.findAll({
     where: {
-      [Op.or]: [{ visibility: 'public' }, { createdBy: req.username }]
+      visibility: 'public'
     },
     include: [
       {
@@ -98,7 +98,7 @@ exports.addShelf = asyncHandler(async (req, res, next) => {
   }
   AWS.config.update({ region: 'ap-southeast-2' })
 
-  const s3 = new AWS.S3({})
+  const s3 = new AWS.S3({ })
   const { base64 } = req.body.coverImg
   const base64Data = new Buffer.from(
     base64.replace(/^data:image\/\w+;base64,/, ''),
