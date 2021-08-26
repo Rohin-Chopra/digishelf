@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,Fragment } from 'react'
 import { API } from 'aws-amplify'
 import BeatLoader from 'react-spinners/BeatLoader'
 import { FaTrash, FaRegEdit, FaSave } from 'react-icons/fa'
@@ -17,6 +17,7 @@ const GetShelf = ({ history, match }) => {
   const [isEditMode, setIsEditMode] = useState(false)
   const [isUsersOwnShelf, setIsUsersOwnShelf] = useState(false)
   const [inputs, setInputs] = useState({})
+
   const fetchShelf = async () => {
     const { user, token } = await getCurrentUser()
     const { shelf } = await API.get(
@@ -87,9 +88,10 @@ const GetShelf = ({ history, match }) => {
               {userName}'s {isEditMode
                 ?
                 <FormInput
-                  className='inline border rounded w-auto'
+                  className='border rounded w-auto'
                   style={{ display: 'inline', width: 'auto' }}
-                  name='name' value={inputs.name}
+                  name='name' 
+                  value={inputs.name}
                   onChange={handleChange}
                 />
                 : shelf?.name
@@ -109,15 +111,15 @@ const GetShelf = ({ history, match }) => {
               onClick={handleEditButton}
             >
               {isEditMode ? (
-                <>
+                <Fragment>
                   <span>Save</span>
                   <FaSave className='md:ml-2 inline text-xl' />
-                </>
+                </Fragment>
               ) : (
-                <>
+                <Fragment>
                   <span className='hidden md:inline'>Edit</span>
                   <FaRegEdit className='md:ml-2 inline text-xl' />
-                </>
+                </Fragment>
               )}
             </Button>
             }
