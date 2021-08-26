@@ -123,9 +123,7 @@ const GetShelf = ({ history, match }) => {
               )}
             </Button>
             }
-            <Button className='bg-secondary mr-2 text-white'>
-              Share <BiShareAlt className='ml-1 inline text-xl' />
-            </Button>
+
             {isUsersOwnShelf && <Button
               className='bg-green-500 rounded-full md:rounded text-center text-white shadow mx-auto fixed bottom-36 right-4 md:static z-50'
               onClick={() =>
