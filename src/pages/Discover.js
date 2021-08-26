@@ -1,7 +1,34 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import Gravatar from 'react-gravatar'
+import { API } from 'aws-amplify'
+import { getCurrentUser } from '../utils/auth'
+import DiscoverCard from '../components/DiscoverCard'
 
-const Discover = () => {
-  return <main className='flex flex-col'>Discover</main>
+const Discover = ({ history }) => {
+  const [shelves, setShelves] = useState([])
+
+  const fetchShelves = async () => {
+    const { token } = await getCurrentUser()
+    const { data: { shelves } } = await API.get('digishelfApi', '/shelves', {
+      headers: { Authorization: token }
+    })
+    setShelves(shelves)
+    console.log(shelves)
+  }
+
+  useEffect(() => {
+    fetchShelves()
+  }, [])
+  return <main className='flex flex-col'>
+    <div className='container px-6 py-4'>
+      <h1 className='prose prose-2xl font-bold'>Discover</h1>
+      <div className='flex flex-col items-center'>
+        {shelves.map((shelf) => (
+          <DiscoverCard shelf={shelf} history={history}/>
+        ))}
+      </div>
+    </div>
+  </main>
 }
 
 export default Discover
