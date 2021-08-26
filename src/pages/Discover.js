@@ -23,7 +23,7 @@ const Discover = ({ history }) => {
       <h1 className='prose prose-2xl font-bold'>Discover</h1>
       <div className='flex flex-col items-center'>
         {shelves.map((shelf) => (
-          <DiscoverCard shelf={shelf} history={history}/>
+          <DiscoverCard shelf={shelf} history={history} />
         ))}
       </div>
     </div>
