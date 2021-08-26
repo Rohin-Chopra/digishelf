@@ -11,6 +11,7 @@ const DiscoverCard = ({ shelf, history }) => {
       <div>
         <img src={`https://rohin-bucket.s3.ap-southeast-2.amazonaws.com/${shelf.coverImg}`}
           className=""
+          alt={`${shelf.name}`}
         />
         <span
           className={`text-white font-bold absolute bottom-10 left-1/3`}

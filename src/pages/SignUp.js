@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import isEmail from 'validator/lib/isEmail'
 import isEmpty from 'validator/lib/isEmpty'
@@ -6,7 +6,6 @@ import ClipLoader from 'react-spinners/ClipLoader'
 import { FaFacebookSquare as FacebookIcon } from 'react-icons/fa'
 import Button from '../components/Button'
 import Snackbar from '../components/Snackbar'
-import AuthContext from '../context/AuthContext'
 import { signUp } from '../utils/auth'
 import GoogleIcon from './../images/google-icon.svg'
 import bookshelfImg from './../images/bookshelf-with-person.png'
@@ -36,7 +35,6 @@ const SignUp = ({ history }) => {
     message: ''
   })
 
-  const [authContext, setAuthContext] = useContext(AuthContext)
 
   useEffect(() => {
     Auth.currentAuthenticatedUser().then((user) => {
@@ -96,7 +94,6 @@ const SignUp = ({ history }) => {
         })
       } else {
         console.log({ user })
-        setAuthContext({ credentials: {}, user })
         setSnackbar({
           show: true,
           color: 'green-500',

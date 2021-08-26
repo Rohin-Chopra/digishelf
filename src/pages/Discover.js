@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import Gravatar from 'react-gravatar'
 import { API } from 'aws-amplify'
 import { getCurrentUser } from '../utils/auth'
 import DiscoverCard from '../components/DiscoverCard'

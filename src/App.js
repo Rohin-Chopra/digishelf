@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import { createBrowserHistory } from 'history'
 import AuthContext from './context/AuthContext'
 import { getCurrentUser } from './utils/auth'
 import Navbar from './components/Navbar'
@@ -28,7 +27,6 @@ const App = () => {
       setAuthContext(res)
     })
   }, [])
-  console.log('hola')
 
   return (
     <AuthContext.Provider value={[authContext, setAuthContext]}>

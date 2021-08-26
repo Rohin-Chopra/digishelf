@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Button from '../components/Button'
 
 const ShelfCard = ({ shelf, history, children }) => {
-  const [isMouseOver, setIsMouseOver] = useState(false)
 
   return (
     <div
@@ -15,14 +14,12 @@ const ShelfCard = ({ shelf, history, children }) => {
         alt='lorem ipsum'
       />
       <span
-        className={`text-white font-bold absolute bottom-20 left-1/3`}
+        className='text-white font-bold absolute bottom-20 left-1/3'
       >
         {shelf.name}
       </span>
       <Button
-        className={`${isMouseOver ? 'md:opacity-100' : 'md:opacity-0'
-          } absolute bottom-8 left-1/3 bg-secondary text-white transition-all`}
-      >
+        className='md:opacity-100 absolute bottom-8 left-1/3 bg-secondary text-white transition-all'>
         View
       </Button>
       {children}

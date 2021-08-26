@@ -1,8 +1,7 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Button from '../components/Button'
 import ClipLoader from 'react-spinners/ClipLoader'
 import { FaFacebookSquare as FacebookIcon } from 'react-icons/fa'
-import AuthContext from '../context/AuthContext'
 import { signIn } from '../utils/auth'
 import GoogleIcon from './../images/google-icon.svg'
 import bookshelfImg from './../images/bookshelf-with-person.png'
@@ -16,7 +15,6 @@ const Login = ({ history }) => {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-  const [authContext, setAuthContext] = useContext(AuthContext)
 
   useEffect(() => {
     Auth.currentAuthenticatedUser().then((user) => {
@@ -26,11 +24,11 @@ const Login = ({ history }) => {
     })
   }, [history])
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (e) => {
     setIsLoading(true)
-    event.preventDefault()
-
-    const [user, error] = await signIn(email, password)
+    e.preventDefault()
+    // eslint-disable-next-line
+    const [_, error] = await signIn(email, password)
 
     if (error) {
       setError('Incorrect email or password')
@@ -38,7 +36,6 @@ const Login = ({ history }) => {
       return
     }
     setIsLoading(false)
-    setAuthContext(user)
     history.push('/shelves')
   }
 

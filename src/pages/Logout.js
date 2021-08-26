@@ -5,6 +5,7 @@ import { getCurrentUser, signOut } from '../utils/auth'
 
 const Logout = () => {
   const user = getCurrentUser()
+  // eslint-disable-next-line
   const [_, setAuthContext] = useContext(AuthContext)
   if (user !== null && signOut()) {
     setAuthContext(null)

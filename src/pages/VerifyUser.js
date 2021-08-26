@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Redirect } from 'react-router-dom'
 import Button from '../components/Button'
 import Snackbar from '../components/Snackbar'
 import ClipLoader from 'react-spinners/ClipLoader'

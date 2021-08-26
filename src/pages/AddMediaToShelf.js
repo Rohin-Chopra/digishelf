@@ -21,7 +21,7 @@ const AddMediaToShelf = ({ history, match }) => {
   ]
 
   const fetchShelf = async () => {
-    const { token, user } = await getCurrentUser()
+    const { token } = await getCurrentUser()
     const { data: { shelf } } = await axios.get(
       `https://sdhr3phfz1.execute-api.ap-southeast-2.amazonaws.com/dev/shelves/${match.params.id}`,
       {
