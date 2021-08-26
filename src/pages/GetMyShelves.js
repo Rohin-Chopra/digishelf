@@ -106,7 +106,11 @@ const GetMyShelves = ({ history, match }) => {
                   {isEditMode ? (
                     <div
                       className='cursor-pointer rounded-full bg-red-500 text-white w-8 h-8 text-center flex items-center justify-center absolute -top-3 -right-3 hover:shadow-lg hover:bg-red-700'
-                      onClick={() => handleDeleteButton(shelf)}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation();
+                        handleDeleteButton(shelf)
+                      }}
                     >
                       <FaTrash className='inline text-lg' />
                     </div>
