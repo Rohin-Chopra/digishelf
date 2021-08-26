@@ -22,7 +22,7 @@ const Footer = () => {
         <a
           target='_blank'
           rel='noopener noreferrer'
-          href='https://github.com/Rohin1212'
+          href='https://www.linkedin.com/in/rohin-chopra-2b38791a0/'
           className='text-black text-4xl mx-2'
         >
           <LinkedInIcon className='inline' />
