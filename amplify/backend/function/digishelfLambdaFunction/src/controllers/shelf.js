@@ -119,7 +119,7 @@ exports.addShelf = asyncHandler(async (req, res, next) => {
     name: req.body.name,
     description: req.body.description,
     createdBy: req.username,
-    publicity: req.body.publicity,
+    visibility: req.body.visibility,
     coverImg: data.Key
   })
 
