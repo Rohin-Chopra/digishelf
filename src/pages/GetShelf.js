@@ -3,7 +3,6 @@ import { API } from 'aws-amplify'
 import BeatLoader from 'react-spinners/BeatLoader'
 import { FaTrash, FaRegEdit, FaSave } from 'react-icons/fa'
 import { IoIosAdd } from 'react-icons/io'
-import { BiShareAlt } from 'react-icons/bi'
 import Button from '../components/Button'
 import { getCurrentUser } from '../utils/auth'
 import emptyShelfImg from '../images/empty-shelf.png'
@@ -131,7 +130,7 @@ const GetShelf = ({ history, match }) => {
               }
             >
               <span className='hidden md:inline'>Add media</span>
-              <IoIosAdd className='md:ml-1 inline text-2xl' />
+              <IoIosAdd className='inline text-2xl' />
             </Button>
             }
           </div>
@@ -152,7 +151,7 @@ const GetShelf = ({ history, match }) => {
               </MediaCard>
             )
           })}
-          {shelf?.Media?.length === 0 && !isLoading ? (
+          {shelf?.Media?.length === 0 && !isLoading && (
             <div className='mt-4 md:col-span-4 flex flex-col items-center'>
               <img
                 className='max-h-44 md:max-h-60'
@@ -164,7 +163,7 @@ const GetShelf = ({ history, match }) => {
                 clicking on add media button
               </p>
             </div>
-          ) : null}
+          )}
         </div>
       </div>
     </main>
