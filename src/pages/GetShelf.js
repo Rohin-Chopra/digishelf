@@ -107,18 +107,18 @@ const GetShelf = ({ history, match }) => {
           </div>
           <div>
             {isUsersOwnShelf && <Button
-              className='bg-yellow-500 rounded-full md:rounded text-center text-white shadow mx-auto fixed bottom-36 right-4 md:static z-50 mr-2'
+              className='bg-yellow-500 text-center text-white shadow mx-auto mr-2'
               onClick={handleEditButton}
             >
               {isEditMode ? (
                 <Fragment>
-                  <span>Save</span>
-                  <FaSave className='md:ml-2 inline text-xl' />
+                  Save
+                  <FaSave className='ml-2 inline text-xl align-text-top' />
                 </Fragment>
               ) : (
                 <Fragment>
-                  <span className='hidden md:inline'>Edit</span>
-                  <FaRegEdit className='md:ml-2 inline text-xl' />
+                  Edit
+                  <FaRegEdit className='ml-2 inline text-xl align-text-top' />
                 </Fragment>
               )}
             </Button>
