@@ -3,6 +3,8 @@ const asyncHandler = require('express-async-handler')
 const { models } = require('./../config/db')
 const { Shelf, ShelfMedia, Media } = models
 const AppError = require('./../utils/AppError')
+const getAllUsers = require('./../utils/getAllUsers')
+
 
 exports.getShelf = asyncHandler(async (req, res, next) => {
   const shelf = await Shelf.findOne({
@@ -35,8 +37,8 @@ exports.getShelf = asyncHandler(async (req, res, next) => {
 })
 
 exports.getAllShelves = asyncHandler(async (req, res, next) => {
-  const { Op } = require('sequelize')
 
+  const users = await getAllUsers()
   // Gets all public shelves and private shelf of the authed user
   const shelves = await Shelf.findAll({
     where: {
@@ -52,6 +54,16 @@ exports.getAllShelves = asyncHandler(async (req, res, next) => {
       }
     ]
   })
+  shelves.forEach((shelf) => {
+    shelf.createdByName = ''
+    users.forEach(user => {
+      if (user.email == shelf.createdBy) {
+        shelf.dataValues.createdByName = user.name
+        return
+      }
+    })
+  })
+
   res.status(200).json({
     status: 'success',
     results: shelves.length,
