@@ -1,4 +1,4 @@
-import React, { useEffect, useState,Fragment } from 'react'
+import React, { useEffect, useState, Fragment } from 'react'
 import { API } from 'aws-amplify'
 import BeatLoader from 'react-spinners/BeatLoader'
 import { FaTrash, FaRegEdit, FaSave } from 'react-icons/fa'
@@ -16,7 +16,7 @@ const GetShelf = ({ history, match }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [isEditMode, setIsEditMode] = useState(false)
   const [isUsersOwnShelf, setIsUsersOwnShelf] = useState(false)
-  const [inputs, setInputs] = useState({})
+  const [inputs, setInputs] = useState({ })
 
   const fetchShelf = async () => {
     const { user, token } = await getCurrentUser()
@@ -90,7 +90,7 @@ const GetShelf = ({ history, match }) => {
                 <FormInput
                   className='border rounded w-auto'
                   style={{ display: 'inline', width: 'auto' }}
-                  name='name' 
+                  name='name'
                   value={inputs.name}
                   onChange={handleChange}
                 />
@@ -145,7 +145,7 @@ const GetShelf = ({ history, match }) => {
               <MediaCard key={media.id} media={media}>
                 {isEditMode ? (
                   <div
-                    className='cursor-pointer rounded-full bg-red-500 text-white w-8 h-8 text-center flex items-center justify-center absolute -top-2 -right-3 hover:shadow-lg hover:bg-red-700'
+                    className='cursor-pointer rounded-full bg-red-500 text-white w-8 h-8 text-center flex items-center justify-center absolute -top-2 -right-3 hover:shadow-lg hover:bg-red-700 shake'
                     onClick={() => handleDeleteButton(media.id)}
                   >
                     <FaTrash className='inline text-lg' />

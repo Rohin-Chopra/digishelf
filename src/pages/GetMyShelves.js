@@ -105,10 +105,10 @@ const GetMyShelves = ({ history, match }) => {
                 <ShelfCard key={shelf.id} shelf={shelf} history={history}>
                   {isEditMode ? (
                     <div
-                      className='cursor-pointer rounded-full bg-red-500 text-white w-8 h-8 text-center flex items-center justify-center absolute -top-3 -right-3 hover:shadow-lg hover:bg-red-700'
+                      className='cursor-pointer rounded-full bg-red-500 text-white w-8 h-8 text-center flex items-center justify-center absolute -top-3 -right-3 hover:shadow-lg hover:bg-red-700 shake'
                       onClick={(e) => {
                         e.preventDefault()
-                        e.stopPropagation();
+                        e.stopPropagation()
                         handleDeleteButton(shelf)
                       }}
                     >
