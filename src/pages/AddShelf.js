@@ -13,13 +13,13 @@ const AddShelf = ({ history }) => {
     name: '',
     description: '',
     coverImg: '',
-    visibility: ''
+    visibility: 'private'
   })
   const [errors, setErrors] = useState({
-    name: false,
-    description: false,
-    coverImg: false,
-    visibility: false
+    name: '',
+    description: '',
+    coverImg: '',
+    visibility: '',
   })
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -46,9 +46,29 @@ const AddShelf = ({ history }) => {
     }
   }
 
+  const validateInputs = () => {
+    let areAllInputsValid = true
+    const myErrors = { }
+    if (!inputs.name) {
+      areAllInputsValid = false
+      myErrors.name = 'Name cannot be empty'
+    }
+    if (!inputs.description) {
+      areAllInputsValid = false
+      myErrors.description = 'Description cannot be empty'
+    }
+    if (!inputs.coverImg) {
+      areAllInputsValid = false
+      myErrors.coverImg = 'You have to upload a image'
+    }
+    setErrors(myErrors)
+    return areAllInputsValid
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (inputs.coverImg) {
+
+    if (validateInputs()) {
       setIsLoading(true)
       const img = await getBase64Image(inputs.coverImg)
       const { token } = await getCurrentUser()
@@ -82,9 +102,8 @@ const AddShelf = ({ history }) => {
           Create a shelf
         </h1>
         <div
-          className={`${
-            message ? '' : 'hidden'
-          } bg-red-500 rounded shadow-lg mx-auto py-2 px-2 text-white mb-2`}
+          className={`${message ? '' : 'hidden'
+            } bg-red-500 rounded shadow-lg mx-auto py-2 px-2 text-white mb-2`}
           style={{ maxWidth: '30rem' }}
         >
           <FaRegTimesCircle className='inline font-bold text-2xl mr-2' />
@@ -103,20 +122,22 @@ const AddShelf = ({ history }) => {
                 type='text'
                 onChange={handleChange}
                 value={inputs.name}
-                isError={inputs.name}
+                isError={errors.name}
               />
+              <small className='text-red-500'>{errors.name}</small>
+
             </div>
             <div className='my-2'>
               <FormLabel>Description</FormLabel>
               <textarea
                 name='description'
-                className={`form-input px-3 rounded w-full shadow ${
-                  errors.description ? 'border-red-500' : ''
-                }`}
+                className={`form-input px-3 rounded w-full shadow ${errors.description ? 'border-red-500' : ''
+                  }`}
                 onChange={handleChange}
               >
                 {inputs.description}
               </textarea>
+              <small className='text-red-500'>{errors.description}</small>
             </div>
             <div className='my-2'>
               <FormLabel>Cover Image</FormLabel>
@@ -139,6 +160,7 @@ const AddShelf = ({ history }) => {
                   'Upload'
                 )}
               </Button>
+              <small className='text-red-500 block'>{errors.coverImg}</small>
             </div>
             <div className='my-3'>
               <FormLabel>Visibility</FormLabel>
