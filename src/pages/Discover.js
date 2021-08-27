@@ -12,7 +12,6 @@ const Discover = ({ history }) => {
       headers: { Authorization: token }
     })
     setShelves(shelves)
-    console.log(shelves)
   }
 
   useEffect(() => {
@@ -23,7 +22,7 @@ const Discover = ({ history }) => {
       <h1 className='prose prose-2xl font-bold'>Discover</h1>
       <div className='flex flex-col items-center'>
         {shelves.map((shelf) => (
-          <DiscoverCard shelf={shelf} history={history} />
+          <DiscoverCard key={shelf.id} shelf={shelf} history={history} />
         ))}
       </div>
     </div>
