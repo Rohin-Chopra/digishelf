@@ -1,0 +1,65 @@
+import type { Title } from "./title";
+import { titleKey } from "./title";
+
+export const SHELF_STORAGE_KEY = "digishelf:shelf:v1";
+
+export interface ShelfItem extends Title {
+  addedAt: string;
+}
+
+const EMPTY: ShelfItem[] = [];
+const listeners = new Set<() => void>();
+let cachedRaw: string | null = null;
+let cachedItems: ShelfItem[] = EMPTY;
+
+function parse(raw: string | null): ShelfItem[] {
+  if (!raw) return EMPTY;
+  try {
+    const value: unknown = JSON.parse(raw);
+    return Array.isArray(value) ? (value as ShelfItem[]) : EMPTY;
+  } catch {
+    return EMPTY;
+  }
+}
+
+export function getShelf(): ShelfItem[] {
+  const raw = window.localStorage.getItem(SHELF_STORAGE_KEY);
+  if (raw !== cachedRaw) {
+    cachedRaw = raw;
+    cachedItems = parse(raw);
+  }
+  return cachedItems;
+}
+
+export function getServerShelf(): ShelfItem[] {
+  return EMPTY;
+}
+
+function write(items: ShelfItem[]) {
+  window.localStorage.setItem(SHELF_STORAGE_KEY, JSON.stringify(items));
+  listeners.forEach((listener) => listener());
+}
+
+export function subscribe(listener: () => void): () => void {
+  listeners.add(listener);
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === SHELF_STORAGE_KEY) listener();
+  };
+  window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(listener);
+    window.removeEventListener("storage", onStorage);
+  };
+}
+
+export function addToShelf(title: Title, now: Date = new Date()) {
+  const items = getShelf();
+  const key = titleKey(title);
+  if (items.some((item) => titleKey(item) === key)) return;
+  write([{ ...title, addedAt: now.toISOString() }, ...items]);
+}
+
+export function removeFromShelf(title: Pick<Title, "id" | "mediaType">) {
+  const key = titleKey(title);
+  write(getShelf().filter((item) => titleKey(item) !== key));
+}

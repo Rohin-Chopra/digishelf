@@ -2,7 +2,9 @@
 
 A digital shelf for the movies and TV shows you love, so you can come back to them later.
 
-Search [TMDB](https://www.themoviedb.org), put what you find on your shelf, and browse it as a wall of posters. The [MVP issue](https://github.com/Rohin-Chopra/digishelf/issues/4) tracks the first release, and the [`idea` issues](https://github.com/Rohin-Chopra/digishelf/issues?q=is%3Aissue+is%3Aopen+label%3Aidea) list what comes next.
+Search [TMDB](https://www.themoviedb.org), put what you find on your shelf, and browse it as a wall of posters.
+
+![My shelf](docs/screenshot.png) The [MVP issue](https://github.com/Rohin-Chopra/digishelf/issues/4) tracks the first release, and the [`idea` issues](https://github.com/Rohin-Chopra/digishelf/issues?q=is%3Aissue+is%3Aopen+label%3Aidea) list what comes next.
 
 ## Tech stack
 
@@ -11,6 +13,12 @@ Search [TMDB](https://www.themoviedb.org), put what you find on your shelf, and 
 - [TMDB API](https://developer.themoviedb.org/docs) for movie and TV data
 - pnpm workspaces and [Turborepo](https://turbo.build)
 - ESLint, Prettier, husky, lint-staged and commitlint (Conventional Commits)
+
+## How it works
+
+- `/search` searches movies and TV shows through `GET /api/search?q=`, a route handler that calls TMDB's `/search/multi` on the server so `TMDB_API_KEY` never reaches the browser.
+- `/` shows your shelf. For now it lives in `localStorage` (`digishelf:shelf:v1`), so no account is needed; accounts and a database come later.
+- Posters load straight from TMDB's image CDN through a custom `next/image` loader that picks the closest TMDB size.
 
 ## Repository layout
 
