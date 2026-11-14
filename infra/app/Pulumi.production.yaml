@@ -1,2 +1,6 @@
 config:
   digishelf-app:domain: digishelf.rohinchopra.com
+  digishelf-app:tmdbApiKey:
+    secure: v1:9zDRoMuny9eu8NpH:sMEAXgmH+TKC7mNrugujr1KMsuwmhsYMfJMgnssl2/zR3MbVYkJKW1EKmxoTh7/J
+secretsprovider: awskms://alias/digishelf-pulumi?region=ap-southeast-4
+encryptedkey: AQICAHg97YS/S0BRwpEZ0yWi9DWTCDqjRwLRDRuu48bFTnGlMwFbBn9KWhSkwx4kbttc262fAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMLbpd1c3cz7sDz+lJAgEQgDtOW8ZQSkcJuGRQ3PNAcUXRnUZQa8W2NhH6WBlDFsBl0ByQwaC/XJa+SAHjs6bymCqoycDrJcUaoO6uUA==
