@@ -1,1 +1,6 @@
-config: {}
+secretsprovider: awskms://alias/digishelf-pulumi?region=ap-southeast-4
+encryptedkey: AQICAHg97YS/S0BRwpEZ0yWi9DWTCDqjRwLRDRuu48bFTnGlMwG21yrKD4NzdaRVK7H+qJy3AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMr669z1bcTcMx0SquAgEQgDtvP9oUnAtU3Tepvk13W4+AbbPG1vUVfsIxmUod5pRJgqWRVWGnjELYgdajyR1viGViH9KXzSbkGnW1lA==
+config:
+  digishelf-github:environments:
+    - production
+    - Production
