@@ -1,0 +1,8 @@
+# Use the Node version from .nvmrc when nvm is available (e.g. GUI git clients).
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  . "$NVM_DIR/nvm.sh" --no-use
+  nvm use --silent >/dev/null 2>&1 || true
+fi
+
+npx lint-staged

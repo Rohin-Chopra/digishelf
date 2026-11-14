@@ -1,0 +1,20 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "env": ["TMDB_*"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "lint": {},
+    "typecheck": {
+      "outputs": []
+    },
+    "test": {
+      "outputs": []
+    }
+  }
+}
