@@ -133,4 +133,23 @@ describe("searchTitles", () => {
       new TmdbRequestError(401),
     );
   });
+
+  it("wraps network failures in a request error", async () => {
+    vi.stubEnv("TMDB_API_KEY", "abc123");
+    fetchMock.mockRejectedValue(new TypeError("fetch failed"));
+    await expect(searchTitles("matrix")).rejects.toBeInstanceOf(
+      TmdbRequestError,
+    );
+  });
+
+  it.each([
+    ["invalid JSON", "<html>oops</html>"],
+    ["a body without results", JSON.stringify({ status_code: 7 })],
+  ])("throws a request error on %s", async (_, body) => {
+    vi.stubEnv("TMDB_API_KEY", "abc123");
+    fetchMock.mockResolvedValue(new Response(body, { status: 200 }));
+    await expect(searchTitles("matrix")).rejects.toBeInstanceOf(
+      TmdbRequestError,
+    );
+  });
 });

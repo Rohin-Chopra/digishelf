@@ -74,4 +74,43 @@ describe("shelf store", () => {
     addToShelf(matrix);
     expect(getShelf()).toHaveLength(1);
   });
+
+  it("keeps working in memory when storage is blocked", () => {
+    const blocked = () => {
+      throw new DOMException("blocked", "SecurityError");
+    };
+    const getItem = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockImplementation(blocked);
+    const setItem = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(blocked);
+    try {
+      expect(() => getShelf()).not.toThrow();
+      addToShelf(matrix);
+      expect(getShelf().map((item) => item.name)).toEqual(["The Matrix"]);
+      removeFromShelf(matrix);
+      expect(getShelf()).toEqual([]);
+    } finally {
+      getItem.mockRestore();
+      setItem.mockRestore();
+    }
+  });
+
+  it("keeps changes in memory when storage is full", async () => {
+    vi.resetModules();
+    const store = await import("@/lib/shelf-store");
+    const setItem = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new DOMException("full", "QuotaExceededError");
+      });
+    try {
+      store.addToShelf(matrix);
+      expect(store.getShelf().map((item) => item.name)).toEqual(["The Matrix"]);
+      expect(window.localStorage.getItem(SHELF_STORAGE_KEY)).toBeNull();
+    } finally {
+      setItem.mockRestore();
+    }
+  });
 });

@@ -21,8 +21,16 @@ interface TmdbSearchResponse {
 export class TmdbConfigError extends Error {}
 
 export class TmdbRequestError extends Error {
-  constructor(public readonly status: number) {
-    super(`TMDB request failed with status ${status}`);
+  constructor(
+    public readonly status: number | null,
+    options?: ErrorOptions,
+  ) {
+    super(
+      status === null
+        ? "TMDB request failed"
+        : `TMDB request failed with status ${status}`,
+      options,
+    );
   }
 }
 
@@ -85,11 +93,24 @@ export async function searchTitles(query: string): Promise<Title[]> {
     page: "1",
   });
 
-  const response = await fetch(url, { headers });
+  let response: Response;
+  try {
+    response = await fetch(url, { headers });
+  } catch (cause) {
+    throw new TmdbRequestError(null, { cause });
+  }
   if (!response.ok) {
     throw new TmdbRequestError(response.status);
   }
 
-  const data = (await response.json()) as TmdbSearchResponse;
+  let data: TmdbSearchResponse;
+  try {
+    data = (await response.json()) as TmdbSearchResponse;
+  } catch (cause) {
+    throw new TmdbRequestError(response.status, { cause });
+  }
+  if (!Array.isArray(data?.results)) {
+    throw new TmdbRequestError(response.status);
+  }
   return data.results.flatMap((result) => toTitle(result) ?? []);
 }
