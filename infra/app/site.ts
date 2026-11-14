@@ -9,17 +9,12 @@ const CACHING_DISABLED = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad";
 const CACHING_OPTIMIZED = "658327ea-f89d-4fab-a63d-7e88639e58f6";
 const ALL_VIEWER_EXCEPT_HOST = "b689b0a8-53d0-40ab-baf2-68738e2966ac";
 
-const ASSETS_PREFIX = "_assets";
-const CACHE_PREFIX = "_cache";
-
-interface OpenNextOutput {
-  behaviors: { pattern: string; origin: string }[];
-}
-
 export interface SiteArgs {
   name: string;
-  /** `apps/web/.open-next`, produced by `pnpm --filter web build:aws`. */
-  openNextDir: string;
+  /** `apps/web/.output`, produced by `pnpm --filter web build` (Nitro aws-lambda preset). */
+  webOutputDir: string;
+  /** `apps/api/dist`, holding the Go `bootstrap` from `pnpm --filter api build`. */
+  apiDistDir: string;
   domain: string;
   hostedZone: string;
   tmdbApiKey: pulumi.Input<string>;
@@ -33,20 +28,91 @@ function listFiles(dir: string): string[] {
     .sort();
 }
 
-/** CloudFront paths served straight from S3 (static files), per OpenNext. */
-export function assetPatterns(output: OpenNextOutput): string[] {
-  return output.behaviors
-    .filter((behavior) => behavior.origin === "s3")
-    .map((behavior) => behavior.pattern);
+/** CloudFront path patterns for everything in the public dir (`assets/*`, `favicon.ico`, ...). */
+export function publicPatterns(publicDir: string): string[] {
+  return fs
+    .readdirSync(publicDir, { withFileTypes: true })
+    .map((entry) =>
+      entry.isDirectory() ? `/${entry.name}/*` : `/${entry.name}`,
+    )
+    .sort();
+}
+
+/**
+ * A Lambda behind its own API Gateway HTTP API. Lambda function URLs aren't available in
+ * ap-southeast-4, and both Nitro's aws-lambda handler and the Go API speak the v2 payload.
+ */
+function httpLambda(
+  name: string,
+  args: {
+    function: Omit<aws.lambda.FunctionArgs, "role" | "loggingConfig" | "name">;
+    routes: string[];
+    throttle?: { burst: number; rate: number };
+  },
+) {
+  const role = new aws.iam.Role(name, {
+    assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({
+      Service: "lambda.amazonaws.com",
+    }),
+  });
+  new aws.iam.RolePolicyAttachment(`${name}-logs`, {
+    role: role.name,
+    policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
+  });
+  const logGroup = new aws.cloudwatch.LogGroup(name, {
+    name: `/aws/lambda/${name}`,
+    retentionInDays: 30,
+  });
+  const fn = new aws.lambda.Function(
+    name,
+    {
+      ...args.function,
+      name,
+      role: role.arn,
+      architectures: ["arm64"],
+      loggingConfig: { logFormat: "Text", logGroup: logGroup.name },
+    },
+    { dependsOn: [logGroup] },
+  );
+
+  const api = new aws.apigatewayv2.Api(name, { protocolType: "HTTP" });
+  const integration = new aws.apigatewayv2.Integration(name, {
+    apiId: api.id,
+    integrationType: "AWS_PROXY",
+    integrationUri: fn.invokeArn,
+    payloadFormatVersion: "2.0",
+  });
+  for (const route of args.routes) {
+    new aws.apigatewayv2.Route(`${name}-${route.replace(/\W+/g, "-")}`, {
+      apiId: api.id,
+      routeKey: route,
+      target: pulumi.interpolate`integrations/${integration.id}`,
+    });
+  }
+  new aws.apigatewayv2.Stage(name, {
+    apiId: api.id,
+    name: "$default",
+    autoDeploy: true,
+    defaultRouteSettings: args.throttle && {
+      throttlingBurstLimit: args.throttle.burst,
+      throttlingRateLimit: args.throttle.rate,
+    },
+  });
+  new aws.lambda.Permission(`${name}-apigateway`, {
+    function: fn.name,
+    action: "lambda:InvokeFunction",
+    principal: "apigateway.amazonaws.com",
+    sourceArn: pulumi.interpolate`${api.executionArn}/*/*`,
+  });
+
+  return { fn, host: api.apiEndpoint.apply((url) => new URL(url).host) };
 }
 
 export function createSite(args: SiteArgs) {
-  const { name, openNextDir } = args;
-  const output = JSON.parse(
-    fs.readFileSync(path.join(openNextDir, "open-next.output.json"), "utf8"),
-  ) as OpenNextOutput;
+  const { name } = args;
+  const publicDir = path.join(args.webOutputDir, "public");
 
-  // ---- static assets and prerendered pages ----
+  // ---- static files ----
 
   const bucket = new aws.s3.Bucket(`${name}-assets`, { forceDestroy: true });
   new aws.s3.BucketPublicAccessBlock(`${name}-assets`, {
@@ -56,93 +122,47 @@ export function createSite(args: SiteArgs) {
     ignorePublicAcls: true,
     restrictPublicBuckets: true,
   });
-
-  const uploads: [string, string, string][] = [
-    [
-      "assets",
-      ASSETS_PREFIX,
-      "public,max-age=0,s-maxage=31536000,must-revalidate",
-    ],
-    ["cache", CACHE_PREFIX, "no-store"],
-  ];
-  for (const [dir, prefix, cacheControl] of uploads) {
-    const root = path.join(openNextDir, dir);
-    for (const file of listFiles(root)) {
-      const key = `${prefix}/${file.split(path.sep).join("/")}`;
-      new aws.s3.BucketObjectv2(`${name}-${key}`, {
-        bucket: bucket.id,
-        key,
-        source: new pulumi.asset.FileAsset(path.join(root, file)),
-        contentType: contentType(file),
-        cacheControl: key.startsWith(`${ASSETS_PREFIX}/_next/static/`)
-          ? "public,max-age=31536000,immutable"
-          : cacheControl,
-      });
-    }
+  for (const file of listFiles(publicDir)) {
+    const key = file.split(path.sep).join("/");
+    new aws.s3.BucketObjectv2(`${name}-${key}`, {
+      bucket: bucket.id,
+      key,
+      source: new pulumi.asset.FileAsset(path.join(publicDir, file)),
+      contentType: contentType(file),
+      // Vite fingerprints everything under assets/.
+      cacheControl: key.startsWith("assets/")
+        ? "public,max-age=31536000,immutable"
+        : "public,max-age=0,s-maxage=86400,must-revalidate",
+    });
   }
 
-  // ---- server function ----
+  // ---- SSR (TanStack Start) and GraphQL (Go) ----
 
-  const role = new aws.iam.Role(`${name}-server`, {
-    assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({
-      Service: "lambda.amazonaws.com",
-    }),
-  });
-  new aws.iam.RolePolicyAttachment(`${name}-server-logs`, {
-    role: role.name,
-    policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
-  });
-  new aws.iam.RolePolicy(`${name}-server-cache`, {
-    role: role.id,
-    policy: bucket.arn.apply((arn) =>
-      JSON.stringify({
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: ["s3:GetObject", "s3:PutObject"],
-            Resource: `${arn}/${CACHE_PREFIX}/*`,
-          },
-          { Effect: "Allow", Action: "s3:ListBucket", Resource: arn },
-        ],
-      }),
-    ),
-  });
-
-  const logGroup = new aws.cloudwatch.LogGroup(`${name}-server`, {
-    name: `/aws/lambda/${name}-server`,
-    retentionInDays: 30,
-  });
-
-  const server = new aws.lambda.Function(
-    `${name}-server`,
-    {
-      name: `${name}-server`,
+  const web = httpLambda(`${name}-web`, {
+    function: {
       runtime: "nodejs26.x",
-      architectures: ["arm64"],
       handler: "index.handler",
       code: new pulumi.asset.FileArchive(
-        path.join(openNextDir, "server-functions/default"),
+        path.join(args.webOutputDir, "server"),
       ),
-      role: role.arn,
       memorySize: 1024,
       timeout: 15,
-      loggingConfig: { logFormat: "Text", logGroup: logGroup.name },
-      environment: {
-        variables: {
-          TMDB_API_KEY: args.tmdbApiKey,
-          CACHE_BUCKET_NAME: bucket.bucket,
-          CACHE_BUCKET_KEY_PREFIX: CACHE_PREFIX,
-          CACHE_BUCKET_REGION: aws.getRegionOutput().region,
-        },
-      },
     },
-    { dependsOn: [logGroup] },
-  );
+    routes: ["$default"],
+  });
 
-  const functionUrl = new aws.lambda.FunctionUrl(`${name}-server`, {
-    functionName: server.name,
-    authorizationType: "AWS_IAM",
+  const api = httpLambda(`${name}-api`, {
+    function: {
+      runtime: "provided.al2023",
+      handler: "bootstrap",
+      code: new pulumi.asset.FileArchive(args.apiDistDir),
+      memorySize: 256,
+      timeout: 10,
+      environment: { variables: { TMDB_API_KEY: args.tmdbApiKey } },
+    },
+    routes: ["GET /graphql", "POST /graphql"],
+    // Every search is a TMDB call; keep a runaway client from burning the key's rate limit.
+    throttle: { burst: 20, rate: 10 },
   });
 
   // ---- CDN ----
@@ -152,17 +172,9 @@ export function createSite(args: SiteArgs) {
     signingBehavior: "always",
     signingProtocol: "sigv4",
   });
-  const lambdaAccess = new aws.cloudfront.OriginAccessControl(
-    `${name}-lambda`,
-    {
-      originAccessControlOriginType: "lambda",
-      signingBehavior: "always",
-      signingProtocol: "sigv4",
-    },
-  );
 
-  // The origin request policy drops Host (the function URL needs its own), so
-  // pass the viewer's host on for Next.
+  // The origin request policy drops Host (API Gateway needs its own), so pass
+  // the viewer's host on for SSR.
   const forwardedHost = new aws.cloudfront.Function(`${name}-forwarded-host`, {
     runtime: "cloudfront-js-2.0",
     publish: true,
@@ -204,6 +216,26 @@ export function createSite(args: SiteArgs) {
     { provider: usEast1 },
   );
 
+  const httpOrigin = (originId: string, domainName: pulumi.Input<string>) => ({
+    originId,
+    domainName,
+    customOriginConfig: {
+      httpPort: 80,
+      httpsPort: 443,
+      originProtocolPolicy: "https-only",
+      originSslProtocols: ["TLSv1.2"],
+    },
+  });
+  const ALL_METHODS = [
+    "GET",
+    "HEAD",
+    "OPTIONS",
+    "PUT",
+    "POST",
+    "PATCH",
+    "DELETE",
+  ];
+
   const distribution = new aws.cloudfront.Distribution(`${name}-site`, {
     enabled: true,
     isIpv6Enabled: true,
@@ -211,36 +243,18 @@ export function createSite(args: SiteArgs) {
     priceClass: "PriceClass_All",
     aliases: [args.domain],
     origins: [
-      {
-        originId: "server",
-        domainName: functionUrl.functionUrl.apply((url) => new URL(url).host),
-        originAccessControlId: lambdaAccess.id,
-        customOriginConfig: {
-          httpPort: 80,
-          httpsPort: 443,
-          originProtocolPolicy: "https-only",
-          originSslProtocols: ["TLSv1.2"],
-        },
-      },
+      httpOrigin("web", web.host),
+      httpOrigin("api", api.host),
       {
         originId: "s3",
         domainName: bucket.bucketRegionalDomainName,
-        originPath: `/${ASSETS_PREFIX}`,
         originAccessControlId: s3Access.id,
       },
     ],
     defaultCacheBehavior: {
-      targetOriginId: "server",
+      targetOriginId: "web",
       viewerProtocolPolicy: "redirect-to-https",
-      allowedMethods: [
-        "GET",
-        "HEAD",
-        "OPTIONS",
-        "PUT",
-        "POST",
-        "PATCH",
-        "DELETE",
-      ],
+      allowedMethods: ALL_METHODS,
       cachedMethods: ["GET", "HEAD"],
       compress: true,
       cachePolicyId: CACHING_DISABLED,
@@ -249,15 +263,27 @@ export function createSite(args: SiteArgs) {
         { eventType: "viewer-request", functionArn: forwardedHost.arn },
       ],
     },
-    orderedCacheBehaviors: assetPatterns(output).map((pattern) => ({
-      pathPattern: pattern,
-      targetOriginId: "s3",
-      viewerProtocolPolicy: "redirect-to-https",
-      allowedMethods: ["GET", "HEAD", "OPTIONS"],
-      cachedMethods: ["GET", "HEAD"],
-      compress: true,
-      cachePolicyId: CACHING_OPTIMIZED,
-    })),
+    orderedCacheBehaviors: [
+      {
+        pathPattern: "/graphql",
+        targetOriginId: "api",
+        viewerProtocolPolicy: "redirect-to-https",
+        allowedMethods: ALL_METHODS,
+        cachedMethods: ["GET", "HEAD"],
+        compress: true,
+        cachePolicyId: CACHING_DISABLED,
+        originRequestPolicyId: ALL_VIEWER_EXCEPT_HOST,
+      },
+      ...publicPatterns(publicDir).map((pathPattern) => ({
+        pathPattern,
+        targetOriginId: "s3",
+        viewerProtocolPolicy: "redirect-to-https",
+        allowedMethods: ["GET", "HEAD", "OPTIONS"],
+        cachedMethods: ["GET", "HEAD"],
+        compress: true,
+        cachePolicyId: CACHING_OPTIMIZED,
+      })),
+    ],
     restrictions: { geoRestriction: { restrictionType: "none" } },
     viewerCertificate: {
       acmCertificateArn: validation.certificateArn,
@@ -278,28 +304,12 @@ export function createSite(args: SiteArgs) {
               Effect: "Allow",
               Principal: { Service: "cloudfront.amazonaws.com" },
               Action: "s3:GetObject",
-              Resource: `${bucketArn}/${ASSETS_PREFIX}/*`,
+              Resource: `${bucketArn}/*`,
               Condition: { StringEquals: { "AWS:SourceArn": distributionArn } },
             },
           ],
         }),
       ),
-  });
-
-  // Function URLs with IAM auth need both permissions for CloudFront's OAC.
-  new aws.lambda.Permission(`${name}-cloudfront-url`, {
-    function: server.name,
-    action: "lambda:InvokeFunctionUrl",
-    principal: "cloudfront.amazonaws.com",
-    sourceArn: distribution.arn,
-    functionUrlAuthType: "AWS_IAM",
-  });
-  new aws.lambda.Permission(`${name}-cloudfront-invoke`, {
-    function: server.name,
-    action: "lambda:InvokeFunction",
-    principal: "cloudfront.amazonaws.com",
-    sourceArn: distribution.arn,
-    invokedViaFunctionUrl: true,
   });
 
   for (const type of ["A", "AAAA"]) {
@@ -321,6 +331,7 @@ export function createSite(args: SiteArgs) {
     url: pulumi.interpolate`https://${args.domain}`,
     distributionId: distribution.id,
     assetsBucket: bucket.bucket,
-    serverFunction: server.name,
+    webFunction: web.fn.name,
+    apiFunction: api.fn.name,
   };
 }

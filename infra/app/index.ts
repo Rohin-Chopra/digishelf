@@ -8,7 +8,8 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 
 const site = createSite({
   name: `digishelf-${pulumi.getStack()}`,
-  openNextDir: path.resolve(here, "../../apps/web/.open-next"),
+  webOutputDir: path.resolve(here, "../../apps/web/.output"),
+  apiDistDir: path.resolve(here, "../../apps/api/dist"),
   domain: config.require("domain"),
   hostedZone: config.require("hostedZone"),
   tmdbApiKey: config.requireSecret("tmdbApiKey"),
@@ -17,4 +18,5 @@ const site = createSite({
 export const url = site.url;
 export const distributionId = site.distributionId;
 export const assetsBucket = site.assetsBucket;
-export const serverFunction = site.serverFunction;
+export const webFunction = site.webFunction;
+export const apiFunction = site.apiFunction;

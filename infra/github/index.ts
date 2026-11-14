@@ -97,6 +97,17 @@ new aws.iam.RolePolicy(`${prefix}github-deploy`, {
             ],
           },
           {
+            // HTTP API IDs are generated, so these can't be narrowed by name.
+            Sid: "HttpApis",
+            Effect: "Allow",
+            Action: ["apigateway:*"],
+            Resource: [
+              `arn:aws:apigateway:${region}::/apis`,
+              `arn:aws:apigateway:${region}::/apis/*`,
+              `arn:aws:apigateway:${region}::/tags/*`,
+            ],
+          },
+          {
             Sid: "Logs",
             Effect: "Allow",
             Action: ["logs:*"],
@@ -156,7 +167,7 @@ new aws.iam.RolePolicy(`${prefix}github-deploy`, {
             Resource: "*",
           },
           {
-            // Pulumi auto-names roles `<name>-server-<suffix>`; excludes this role itself.
+            // Pulumi auto-names roles `<name>-web-<suffix>` / `<name>-api-<suffix>`; excludes this role itself.
             Sid: "LambdaRoles",
             Effect: "Allow",
             Action: [

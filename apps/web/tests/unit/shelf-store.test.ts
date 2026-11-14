@@ -37,7 +37,7 @@ describe("shelf store", () => {
       "The Matrix (TV)",
       "The Matrix",
     ]);
-    expect(getShelf()[1].addedAt).toBe("2026-01-01T00:00:00.000Z");
+    expect(getShelf()[1]!.addedAt).toBe("2026-01-01T00:00:00.000Z");
     expect(
       JSON.parse(window.localStorage.getItem(SHELF_STORAGE_KEY)!),
     ).toHaveLength(2);

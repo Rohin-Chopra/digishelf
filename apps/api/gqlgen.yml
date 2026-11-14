@@ -1,0 +1,15 @@
+schema:
+  - graph/schema.graphqls
+exec:
+  package: graph
+  layout: single-file
+  filename: graph/generated.go
+model:
+  filename: graph/model/models_gen.go
+  package: model
+resolver:
+  package: graph
+  layout: follow-schema
+  dir: graph
+  filename_template: "{name}.resolvers.go"
+omit_gqlgen_version_in_file_notice: true
