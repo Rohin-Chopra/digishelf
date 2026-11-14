@@ -1,0 +1,12 @@
+name: digishelf-app
+description: Digishelf web app (OpenNext on Lambda + CloudFront)
+runtime:
+  name: nodejs
+  options:
+    packagemanager: pnpm
+    # Node runs the .ts files directly (type stripping), so no ts-node.
+    typescript: false
+main: index.ts
+config:
+  aws:region: ap-southeast-4
+  digishelf-app:hostedZone: rohinchopra.com

@@ -54,3 +54,20 @@ Get a free TMDB key at <https://www.themoviedb.org/settings/api>. `TMDB_API_KEY`
 <img src="apps/web/public/tmdb-logo.svg" alt="TMDB" width="120" />
 
 This product uses the TMDB API but is not endorsed or certified by TMDB.
+
+## Deployment
+
+Pushes to `main` deploy to [digishelf.rohinchopra.com](https://digishelf.rohinchopra.com) via [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml): CI, then `pnpm --filter web build:aws` ([OpenNext](https://opennext.js.org/aws)), then `pulumi up` on the `production` stack of [`infra/app`](infra/app), then a smoke test against the live site.
+
+- `infra/app`: S3 (static assets and prerendered pages), a Node 26 Lambda behind a function URL, CloudFront, ACM and Route 53, in `ap-southeast-4`.
+- `infra/github`: the OIDC role GitHub Actions assumes. Only jobs in the `production` environment can use it.
+- Pulumi state is in S3 (`digishelf-pulumi-state-<account>`) and stack secrets are encrypted with the `alias/digishelf-pulumi` KMS key.
+
+One-off setup, with admin AWS credentials and the Pulumi CLI:
+
+```sh
+pnpm install && pnpm --filter web build:aws
+TMDB_API_KEY=... infra/bootstrap.sh
+```
+
+Then, in GitHub, create a `production` environment and set the repository variable `AWS_ROLE_ARN` to the role the script prints.

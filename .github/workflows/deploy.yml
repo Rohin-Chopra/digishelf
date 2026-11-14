@@ -1,0 +1,81 @@
+# Every push to main: CI → build with OpenNext → pulumi up (production) → smoke test.
+name: Deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy at a time, in order. A queued run is replaced by a newer push, which contains it.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions: {}
+
+env:
+  AWS_REGION: ap-southeast-4
+  SITE_URL: https://digishelf.rohinchopra.com
+
+jobs:
+  checks:
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
+  deploy:
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: ${{ env.SITE_URL }}
+    permissions:
+      contents: read
+      id-token: write # OIDC → AWS role (infra/github)
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build (OpenNext)
+        run: pnpm --filter web build:aws
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: pulumi/actions@v6
+
+      - name: Pulumi up
+        working-directory: infra/app
+        run: |
+          account="$(aws sts get-caller-identity --query Account --output text)"
+          pulumi login "s3://digishelf-pulumi-state-$account?region=$AWS_REGION"
+          pulumi up --stack production --yes --non-interactive --diff
+          aws cloudfront create-invalidation \
+            --distribution-id "$(pulumi stack output distributionId --stack production)" \
+            --paths "/*" >/dev/null
+
+      - name: Smoke test
+        run: |
+          for _ in $(seq 1 30); do
+            if curl -fsS -o /dev/null "$SITE_URL/" &&
+              curl -fsS "$SITE_URL/api/search?q=matrix" | jq -e '.results | length > 0' >/dev/null; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::$SITE_URL not healthy after 5 minutes"
+          exit 1
