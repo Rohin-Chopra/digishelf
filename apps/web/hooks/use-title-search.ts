@@ -24,7 +24,7 @@ export function useTitleSearch(query: string) {
       signal: controller.signal,
     })
       .then(async (response) => {
-        const body = (await response.json()) as {
+        const body = (await response.json().catch(() => ({}))) as {
           results?: Title[];
           error?: string;
         };
