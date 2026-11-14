@@ -1,13 +1,14 @@
+import { Suspense } from "react";
+import { PosterGridSkeleton } from "@/components/poster-grid";
+import { ShelfView } from "@/components/shelf-view";
+
 export default function Home() {
   return (
-    <main className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-24">
-      <h1 className="font-display text-7xl tracking-wide text-accent sm:text-8xl">
-        Digishelf
-      </h1>
-      <p className="max-w-xl text-lg text-muted">
-        A digital shelf for the movies and TV shows you love, so you can cherish
-        them later. Coming soon.
-      </p>
+    <main className="mx-auto max-w-6xl px-6 py-10">
+      <h1 className="mb-2 font-display text-5xl tracking-wide">My shelf</h1>
+      <Suspense fallback={<PosterGridSkeleton />}>
+        <ShelfView />
+      </Suspense>
     </main>
   );
 }
