@@ -1,0 +1,21 @@
+"A movie or TV show from TMDB."
+type Title {
+  "TMDB id. Movies and TV shows have separate id spaces, so pair it with mediaType."
+  id: Int!
+  mediaType: MediaType!
+  name: String!
+  year: Int
+  "Poster path for https://image.tmdb.org/t/p/<size><posterPath>."
+  posterPath: String
+  overview: String!
+}
+
+enum MediaType {
+  MOVIE
+  TV
+}
+
+type Query {
+  "Movies and TV shows matching the query, in TMDB's order. People are left out."
+  search(query: String!): [Title!]!
+}

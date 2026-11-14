@@ -1,5 +1,5 @@
 name: digishelf-app
-description: Digishelf web app (OpenNext on Lambda + CloudFront)
+description: Digishelf, TanStack Start SSR and Go GraphQL Lambdas behind CloudFront
 runtime:
   name: nodejs
   options:

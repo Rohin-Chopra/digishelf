@@ -1,4 +1,4 @@
-# Every push to main: CI → build with OpenNext → pulumi up (production) → smoke test.
+# Every push to main: CI → build (TanStack Start + Go) → pulumi up (production) → smoke test.
 name: Deploy
 on:
   push:
@@ -44,12 +44,15 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
 
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: apps/api/go.mod
+          cache-dependency-path: apps/api/go.sum
+
       - run: pnpm install --frozen-lockfile
 
-      - name: Build (OpenNext)
-        run: pnpm --filter web build:aws
-        env:
-          NEXT_TELEMETRY_DISABLED: 1
+      - name: Build (web SSR + Go API Lambdas)
+        run: pnpm build
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -70,9 +73,11 @@ jobs:
 
       - name: Smoke test
         run: |
+          query='{"query":"query($q: String!) { search(query: $q) { id mediaType name } }","variables":{"q":"matrix"}}'
           for _ in $(seq 1 30); do
             if curl -fsS -o /dev/null "$SITE_URL/" &&
-              curl -fsS "$SITE_URL/api/search?q=matrix" | jq -e '.results | length > 0' >/dev/null; then
+              curl -fsS "$SITE_URL/graphql" -H 'content-type: application/json' -d "$query" |
+              jq -e '(.errors | not) and (.data.search | length > 0)' >/dev/null; then
               exit 0
             fi
             sleep 10

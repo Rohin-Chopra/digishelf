@@ -23,6 +23,11 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
 
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: apps/api/go.mod
+          cache-dependency-path: apps/api/go.sum
+
       - run: pnpm install --frozen-lockfile
 
       - name: Format
@@ -37,10 +42,12 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: GraphQL code is up to date
+        working-directory: apps/api
+        run: go generate ./... && git diff --exit-code
+
       - name: Build
         run: pnpm build
-        env:
-          NEXT_TELEMETRY_DISABLED: 1
 
   e2e:
     runs-on: ubuntu-latest
@@ -53,6 +60,11 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: apps/api/go.mod
+          cache-dependency-path: apps/api/go.sum
 
       - run: pnpm install --frozen-lockfile
 

@@ -26,8 +26,9 @@ pulumi.runtime.setMocks(
       }
       if (type === "aws:cloudwatch/logGroup:LogGroup") state.name = inputs.name;
       if (type === "aws:lambda/function:Function") state.name = inputs.name;
-      if (type === "aws:lambda/functionUrl:FunctionUrl") {
-        state.functionUrl = "https://abc123.lambda-url.ap-southeast-4.on.aws/";
+      if (type === "aws:apigatewayv2/api:Api") {
+        state.apiEndpoint = `https://${name}.execute-api.ap-southeast-4.amazonaws.com`;
+        state.executionArn = `arn:mock:execute-api:${name}`;
       }
       if (type === "aws:acm/certificate:Certificate") {
         state.domainValidationOptions = [
@@ -52,29 +53,21 @@ pulumi.runtime.setMocks(
   false,
 );
 
-function fixture(): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "open-next-"));
+function fixture(): { webOutputDir: string; apiDistDir: string } {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "digishelf-build-"));
   const write = (file: string, body = "") => {
     fs.mkdirSync(path.dirname(path.join(dir, file)), { recursive: true });
     fs.writeFileSync(path.join(dir, file), body);
   };
-  write(
-    "open-next.output.json",
-    JSON.stringify({
-      behaviors: [
-        { pattern: "_next/image*", origin: "imageOptimizer" },
-        { pattern: "_next/data/*", origin: "default" },
-        { pattern: "*", origin: "default" },
-        { pattern: "_next/*", origin: "s3" },
-        { pattern: "tmdb-logo.svg", origin: "s3" },
-      ],
-    }),
-  );
-  write("assets/_next/static/chunks/app.js");
-  write("assets/tmdb-logo.svg");
-  write("cache/BUILD/index.cache");
-  write("server-functions/default/index.mjs");
-  return dir;
+  write("web/public/assets/main-abc123.js");
+  write("web/public/favicon.ico");
+  write("web/public/tmdb-logo.svg");
+  write("web/server/index.mjs");
+  write("api/bootstrap");
+  return {
+    webOutputDir: path.join(dir, "web"),
+    apiDistDir: path.join(dir, "api"),
+  };
 }
 
 const outputOf = <T>(output: pulumi.Output<T>) =>
@@ -87,7 +80,7 @@ describe("createSite", () => {
     const { createSite } = await import("../app/site.ts");
     site = createSite({
       name: "digishelf-test",
-      openNextDir: fixture(),
+      ...fixture(),
       domain: "digishelf.example.com",
       hostedZone: "example.com",
       tmdbApiKey: pulumi.secret("tmdb-key"),
@@ -97,59 +90,89 @@ describe("createSite", () => {
   });
 
   const ofType = (type: string) => created.filter((r) => r.type === type);
+  const fn = (name: string) =>
+    ofType("aws:lambda/function:Function").find((f) => f.name === name)!;
 
-  it("uploads assets under _assets/ and the cache under _cache/", () => {
+  it("uploads the public dir with immutable caching for fingerprinted assets", () => {
     const objects = ofType("aws:s3/bucketObjectv2:BucketObjectv2");
     expect(objects.map((o) => o.inputs.key).sort()).toEqual([
-      "_assets/_next/static/chunks/app.js",
-      "_assets/tmdb-logo.svg",
-      "_cache/BUILD/index.cache",
+      "assets/main-abc123.js",
+      "favicon.ico",
+      "tmdb-logo.svg",
     ]);
-    const js = objects.find(
-      (o) => o.inputs.key === "_assets/_next/static/chunks/app.js",
-    );
+    const js = objects.find((o) => o.inputs.key === "assets/main-abc123.js");
     expect(js?.inputs.cacheControl).toBe("public,max-age=31536000,immutable");
     expect(js?.inputs.contentType).toBe("text/javascript; charset=utf-8");
   });
 
-  it("routes only OpenNext's s3 behaviours to the bucket", () => {
+  it("routes /graphql to the API, public files to S3 and the rest to SSR", () => {
     const [distribution] = ofType("aws:cloudfront/distribution:Distribution");
-    const ordered = distribution.inputs.orderedCacheBehaviors as {
+    const ordered = distribution!.inputs.orderedCacheBehaviors as {
       pathPattern: string;
       targetOriginId: string;
     }[];
     expect(ordered.map((b) => [b.pathPattern, b.targetOriginId])).toEqual([
-      ["_next/*", "s3"],
-      ["tmdb-logo.svg", "s3"],
+      ["/graphql", "api"],
+      ["/assets/*", "s3"],
+      ["/favicon.ico", "s3"],
+      ["/tmdb-logo.svg", "s3"],
     ]);
-    const origins = distribution.inputs.origins as {
+    expect(
+      (distribution!.inputs.defaultCacheBehavior as { targetOriginId: string })
+        .targetOriginId,
+    ).toBe("web");
+    const origins = distribution!.inputs.origins as {
       originId: string;
       domainName: string;
     }[];
-    expect(origins.find((o) => o.originId === "server")?.domainName).toBe(
-      "abc123.lambda-url.ap-southeast-4.on.aws",
-    );
-    expect(distribution.inputs.aliases).toEqual(["digishelf.example.com"]);
+    expect(
+      Object.fromEntries(origins.map((o) => [o.originId, o.domainName])),
+    ).toMatchObject({
+      web: "digishelf-test-web.execute-api.ap-southeast-4.amazonaws.com",
+      api: "digishelf-test-api.execute-api.ap-southeast-4.amazonaws.com",
+    });
+    expect(distribution!.inputs.aliases).toEqual(["digishelf.example.com"]);
   });
 
-  it("runs the server on Node 26 with the cache and TMDB env", () => {
-    const [server] = ofType("aws:lambda/function:Function");
-    expect(server.inputs.runtime).toBe("nodejs26.x");
+  it("fronts both Lambdas with HTTP APIs, not function URLs", () => {
+    expect(ofType("aws:lambda/functionUrl:FunctionUrl")).toEqual([]);
+    const routes = ofType("aws:apigatewayv2/route:Route").map(
+      (r) => r.inputs.routeKey,
+    );
+    expect(routes.sort()).toEqual([
+      "$default",
+      "GET /graphql",
+      "POST /graphql",
+    ]);
+    const integrations = ofType("aws:apigatewayv2/integration:Integration");
+    expect(integrations.map((i) => i.inputs.payloadFormatVersion)).toEqual([
+      "2.0",
+      "2.0",
+    ]);
+    expect(ofType("aws:lambda/permission:Permission")).toHaveLength(2);
+  });
+
+  it("runs SSR on Node 26 and the Go API on al2023, with the TMDB key only in the API", () => {
+    const web = fn("digishelf-test-web");
+    expect(web.inputs).toMatchObject({
+      runtime: "nodejs26.x",
+      handler: "index.handler",
+    });
+    expect(web.inputs.environment).toBeUndefined();
+
+    const api = fn("digishelf-test-api");
+    expect(api.inputs).toMatchObject({
+      runtime: "provided.al2023",
+      handler: "bootstrap",
+      architectures: ["arm64"],
+    });
     // The TMDB key makes the whole environment block a Pulumi secret.
-    const environment = server.inputs.environment as {
+    const environment = api.inputs.environment as {
       [SECRET_SIG]: string;
       value: { variables: Record<string, unknown> };
     };
     expect(environment[SECRET_SIG]).toBeDefined();
-    const env = environment.value.variables;
-    expect(env).toMatchObject({
-      TMDB_API_KEY: "tmdb-key",
-      CACHE_BUCKET_NAME: "digishelf-test-assets-abc123",
-      CACHE_BUCKET_KEY_PREFIX: "_cache",
-      CACHE_BUCKET_REGION: "ap-southeast-4",
-    });
-    const [url] = ofType("aws:lambda/functionUrl:FunctionUrl");
-    expect(url.inputs.authorizationType).toBe("AWS_IAM");
+    expect(environment.value.variables).toEqual({ TMDB_API_KEY: "tmdb-key" });
   });
 
   it("points A and AAAA records at the distribution", () => {

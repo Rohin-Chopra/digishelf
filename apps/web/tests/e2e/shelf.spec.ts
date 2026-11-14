@@ -1,4 +1,15 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+// Typing before React hydrates would be lost, so wait for the root route's marker.
+async function visit(page: Page, url: string) {
+  await page.goto(url);
+  await page.locator("html[data-hydrated]").waitFor({ state: "attached" });
+}
+
+async function reload(page: Page) {
+  await page.reload();
+  await page.locator("html[data-hydrated]").waitFor({ state: "attached" });
+}
 
 const POSTER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="342" height="513"><rect width="100%" height="100%" fill="#6b4f3a"/></svg>`;
 
@@ -9,7 +20,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("search, add to shelf, view and remove", async ({ page }) => {
-  await page.goto("/");
+  await visit(page, "/");
   await expect(page.getByText("Your shelf is empty.")).toBeVisible();
 
   await page.getByRole("link", { name: "Find something to add" }).click();
@@ -44,7 +55,7 @@ test("search, add to shelf, view and remove", async ({ page }) => {
   // Newest first; Breaking Bad has no poster so its name is shown instead.
   await expect(shelf.getByRole("listitem").first()).toContainText("TV · 2008");
 
-  await page.reload();
+  await reload(page);
   await expect(shelf.getByRole("listitem")).toHaveCount(2);
 
   await page
@@ -62,7 +73,7 @@ test("search, add to shelf, view and remove", async ({ page }) => {
 test("search reflects shelf state and survives a reload via the URL", async ({
   page,
 }) => {
-  await page.goto("/search?q=matrix");
+  await visit(page, "/search?q=matrix");
   await expect(page.getByLabel("Search movies and TV shows")).toHaveValue(
     "matrix",
   );
@@ -70,7 +81,7 @@ test("search reflects shelf state and survives a reload via the URL", async ({
     .getByRole("button", { name: "Add The Matrix Reloaded to shelf" })
     .click();
 
-  await page.reload();
+  await reload(page);
   await expect(
     page.getByRole("button", { name: "Remove The Matrix Reloaded from shelf" }),
   ).toBeVisible();
@@ -80,7 +91,7 @@ test("search reflects shelf state and survives a reload via the URL", async ({
 });
 
 test("navigating to search clears the previous query", async ({ page }) => {
-  await page.goto("/search");
+  await visit(page, "/search");
   await page.getByLabel("Search movies and TV shows").fill("matrix");
   await expect(page).toHaveURL(/\/search\?q=matrix$/);
   await expect(
@@ -95,17 +106,17 @@ test("navigating to search clears the previous query", async ({ page }) => {
 });
 
 test("shows empty and error states", async ({ page }) => {
-  await page.goto("/search?q=zzzz");
+  await visit(page, "/search?q=zzzz");
   await expect(page.getByText("No results for “zzzz”.")).toBeVisible();
 
-  await page.goto("/search?q=explode");
+  await visit(page, "/search?q=explode");
   await expect(page.getByRole("main").getByRole("alert")).toHaveText(
     "Search is unavailable right now",
   );
 });
 
 test("shows TMDB attribution", async ({ page }) => {
-  await page.goto("/");
+  await visit(page, "/");
   await expect(
     page.getByText(
       "This product uses the TMDB API but is not endorsed or certified by TMDB.",
