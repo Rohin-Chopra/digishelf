@@ -22,8 +22,17 @@ function parse(raw: string | null): ShelfItem[] {
   }
 }
 
+// Storage can throw (blocked site data, quota); fall back to the in-memory copy.
+function readRaw(): string | null {
+  try {
+    return window.localStorage.getItem(SHELF_STORAGE_KEY);
+  } catch {
+    return cachedRaw;
+  }
+}
+
 export function getShelf(): ShelfItem[] {
-  const raw = window.localStorage.getItem(SHELF_STORAGE_KEY);
+  const raw = readRaw();
   if (raw !== cachedRaw) {
     cachedRaw = raw;
     cachedItems = parse(raw);
@@ -36,7 +45,13 @@ export function getServerShelf(): ShelfItem[] {
 }
 
 function write(items: ShelfItem[]) {
-  window.localStorage.setItem(SHELF_STORAGE_KEY, JSON.stringify(items));
+  cachedRaw = JSON.stringify(items);
+  cachedItems = items;
+  try {
+    window.localStorage.setItem(SHELF_STORAGE_KEY, cachedRaw);
+  } catch {
+    // Keep the in-memory shelf for this page view.
+  }
   listeners.forEach((listener) => listener());
 }
 
