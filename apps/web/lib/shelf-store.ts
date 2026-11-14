@@ -11,6 +11,7 @@ const EMPTY: ShelfItem[] = [];
 const listeners = new Set<() => void>();
 let cachedRaw: string | null = null;
 let cachedItems: ShelfItem[] = EMPTY;
+let memoryOnly = false;
 
 function parse(raw: string | null): ShelfItem[] {
   if (!raw) return EMPTY;
@@ -24,6 +25,7 @@ function parse(raw: string | null): ShelfItem[] {
 
 // Storage can throw (blocked site data, quota); fall back to the in-memory copy.
 function readRaw(): string | null {
+  if (memoryOnly) return cachedRaw;
   try {
     return window.localStorage.getItem(SHELF_STORAGE_KEY);
   } catch {
@@ -51,6 +53,7 @@ function write(items: ShelfItem[]) {
     window.localStorage.setItem(SHELF_STORAGE_KEY, cachedRaw);
   } catch {
     // Keep the in-memory shelf for this page view.
+    memoryOnly = true;
   }
   listeners.forEach((listener) => listener());
 }

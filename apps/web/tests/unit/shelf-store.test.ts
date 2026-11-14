@@ -96,4 +96,21 @@ describe("shelf store", () => {
       setItem.mockRestore();
     }
   });
+
+  it("keeps changes in memory when storage is full", async () => {
+    vi.resetModules();
+    const store = await import("@/lib/shelf-store");
+    const setItem = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new DOMException("full", "QuotaExceededError");
+      });
+    try {
+      store.addToShelf(matrix);
+      expect(store.getShelf().map((item) => item.name)).toEqual(["The Matrix"]);
+      expect(window.localStorage.getItem(SHELF_STORAGE_KEY)).toBeNull();
+    } finally {
+      setItem.mockRestore();
+    }
+  });
 });
