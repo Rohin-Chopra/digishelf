@@ -28,8 +28,10 @@ export function useTitleSearch(query: string) {
           results?: Title[];
           error?: string;
         };
-        if (!response.ok) throw new Error(body.error ?? "Search failed");
-        setState({ query, results: body.results ?? [], error: null });
+        if (!response.ok || !Array.isArray(body.results)) {
+          throw new Error(body.error ?? "Search failed");
+        }
+        setState({ query, results: body.results, error: null });
       })
       .catch((error: unknown) => {
         if (controller.signal.aborted) return;
