@@ -79,6 +79,21 @@ test("search reflects shelf state and survives a reload via the URL", async ({
   ).toBeVisible();
 });
 
+test("navigating to search clears the previous query", async ({ page }) => {
+  await page.goto("/search");
+  await page.getByLabel("Search movies and TV shows").fill("matrix");
+  await expect(page).toHaveURL(/\/search\?q=matrix$/);
+  await expect(
+    page.getByRole("button", { name: "Add The Matrix to shelf" }),
+  ).toBeVisible();
+
+  await page.getByRole("link", { name: "Add titles" }).click();
+  await expect(page).toHaveURL(/\/search$/);
+  await expect(page.getByLabel("Search movies and TV shows")).toHaveValue("");
+  await page.waitForTimeout(500);
+  await expect(page).toHaveURL(/\/search$/);
+});
+
 test("shows empty and error states", async ({ page }) => {
   await page.goto("/search?q=zzzz");
   await expect(page.getByText("No results for “zzzz”.")).toBeVisible();

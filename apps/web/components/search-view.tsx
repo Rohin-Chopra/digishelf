@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useShelf } from "@/hooks/use-shelf";
 import { useTitleSearch } from "@/hooks/use-title-search";
@@ -17,10 +17,15 @@ import { TitleMeta } from "./title-meta";
 const DEBOUNCE_MS = 300;
 
 export function SearchView() {
-  const router = useRouter();
   const pathname = usePathname();
   const query = useSearchParams().get("q")?.trim() ?? "";
   const [input, setInput] = useState(query);
+  const [syncedQuery, setSyncedQuery] = useState(query);
+  // The URL changed without the search box (header link, back/forward).
+  if (query !== syncedQuery) {
+    setSyncedQuery(query);
+    setInput(query);
+  }
   const { results, error, loading } = useTitleSearch(query);
   const shelf = useShelf();
   const shelfKeys = new Set(shelf.map(titleKey));
@@ -28,9 +33,11 @@ export function SearchView() {
   function updateQuery(value: string) {
     const next = value.trim();
     if (next === query) return;
-    router.replace(
+    setSyncedQuery(next);
+    window.history.replaceState(
+      null,
+      "",
       next ? `${pathname}?q=${encodeURIComponent(next)}` : pathname,
-      { scroll: false },
     );
   }
 

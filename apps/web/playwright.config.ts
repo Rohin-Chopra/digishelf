@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 3100;
-const MOCK_TMDB_PORT = 4010;
+const PORT = Number(process.env.E2E_PORT ?? 3100);
+const MOCK_TMDB_PORT = Number(process.env.E2E_MOCK_TMDB_PORT ?? 4010);
 
 export default defineConfig({
   testDir: "./tests/e2e",
