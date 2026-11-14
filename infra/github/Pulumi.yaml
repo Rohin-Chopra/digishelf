@@ -1,0 +1,10 @@
+name: digishelf-github
+description: GitHub Actions OIDC deploy role for digishelf (applied by an admin, once)
+runtime:
+  name: nodejs
+  options:
+    packagemanager: pnpm
+    typescript: false
+main: index.ts
+config:
+  aws:region: ap-southeast-4
